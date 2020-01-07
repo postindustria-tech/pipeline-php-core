@@ -1,0 +1,40 @@
+{
+    "name": "51degrees/fiftyone.pipeline.core",
+    "description": "51Degrees Pipeline API - Real-time data micro-services aggregator.",
+	"authors" : [
+		{
+			"name": "Filip Hnízdo",
+            "email": "filip@octophin.com",
+            "homepage": "https://octophindigital.com/"
+        },
+		{
+			"name": "Steve Ballantine",
+            "email": "stephen@51degrees.com"
+        },
+		{
+			"name": "Ben Shilito",
+            "email": "ben@51degrees.com"
+        },
+		{
+			"name": "Joseph Dix",
+            "email": "joseph@51degrees.com"
+        }
+	],
+    "license": "EUPL-1.2", 
+    "type": "library",
+    "require": {},
+    "autoload": {
+        "classmap": [
+            "elementData.php",
+            "elementDataDictionary.php",
+            "evidence.php",
+            "evidenceKeyFilter.php",
+            "basicListEvidenceKeyFilter.php",
+            "flowData.php",
+            "flowElement.php",
+            "logger.php",
+            "pipeline.php",
+            "pipelineBuilder.php"
+        ]
+    }
+}
