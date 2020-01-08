@@ -21,8 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-/*
-@example customFlowElement.js
+/**
+@example customFlowElement.php
 
 This example demonstrates the creation of a custom flow element. In this case 
 the flowElement takes the results of a client side form collecting 
