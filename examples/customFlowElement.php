@@ -72,7 +72,10 @@ function getStarSign($month, $day) {
 
 };
 
+//! [class]
+//! [declaration]
 class astrologyFlowElement extends flowElement {
+//! [declaration]
 
     // datakey used to categorise data coming back from this 
     // flowElement in a pipeline
@@ -145,6 +148,9 @@ class astrologyFlowElement extends flowElement {
     
 }
 
+//! [class]
+//! [usage]
+
 // Make the pipeline and add the element we want to it
 $pipeline = (new pipelineBuilder())->add(new astrologyFlowElement())->build();
 
@@ -200,3 +206,4 @@ $output .= "</script>";
 // Return the full output to the page
 
 echo $output;
+//! [usage]
