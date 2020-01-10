@@ -34,7 +34,7 @@ a person is in the northern or southern hemispheres.
 
 */
 
-include("../vendor/autoload.php");
+include(__DIR__ . "/../vendor/autoload.php");
 
 use fiftyone\pipeline\core\pipelineBuilder;
 use fiftyone\pipeline\core\basicListEvidenceKeyFilter;

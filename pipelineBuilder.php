@@ -80,17 +80,23 @@ class pipelineBuilder {
 
             $builder = $element["BuilderName"];
 
-            if(isset($element["BuildParameters"])){
-                $options = $element["BuildParameters"];
-            } else {
-                $options = [];
-            }
+            $flowElement = new $builder();
 
-            $flowElements[] = new $builder($options);
+            if(isset($element["BuildParameters"])){
+                
+                foreach($element["BuildParameters"] as $paramaterKey => $paramaterValue){
+
+                    $flowElement->{$paramaterKey} = $paramaterValue;
+
+                }
+
+            }
+            
+            $this->flowElements[] = $flowElement;
 
         }
 
-        return new pipeline($flowElements, $this->settings);
+        return $this;
 
     }
 

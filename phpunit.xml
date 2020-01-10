@@ -1,7 +1,8 @@
 <phpunit>
   <testsuites>
     <testsuite name="Tests">
-      <file>tests/index.php</file>
+      <file>tests/core.php</file>
+      <file>tests/examples.php</file>
     </testsuite>
   </testsuites>
 </phpunit>

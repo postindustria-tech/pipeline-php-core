@@ -144,9 +144,11 @@ class evidence {
         if (isset($server["SERVER_ADDR"])){
             $evidence["server.host-ip"] = $server["SERVER_ADDR"];
         }
-  
-        $evidence["server.client-ip"] = $server["REMOTE_ADDR"];
-        
+
+        if (isset($server["REMOTE_ADDR"])){
+            $evidence["server.client-ip"] = $server["REMOTE_ADDR"];
+        }
+          
         $this->setArray($evidence);
   
     }
