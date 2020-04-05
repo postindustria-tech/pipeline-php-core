@@ -21,40 +21,41 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-
-
 namespace fiftyone\pipeline\core;
 
-require_once(__DIR__ . "/evidenceKeyFilter.php");
+class sequenceElement extends flowElement {
 
-use fiftyone\pipeline\core\evidenceKeyFilter;
+    public $dataKey = "sequence";
 
-class basicListEvidenceKeyFilter extends evidenceKeyFilter {
+    /**
+     * The SequenceElement stores session data for requests for JavaScript
+     * @param {flowData} flowData
+    */
+    public function processInternal($flowData) {
 
-    private $list;
-
-    public function __construct($list) {
-
-        $this->list = $list;
-
-    }
-
-    public function filterEvidenceKey($key) {
-
-        $keep = false;
-
-        foreach ($this->list as $evidenceKey){
-
-            if($key === $evidenceKey){
-
-                $keep = true;
-
+        if ($flowData->evidence->get("query.session-id")) {
+            
+            // Get current sequence number
+      
+            $sequence = $flowData->evidence->get("query.sequence");
+      
+            if ($sequence) {
+              $sequence = intval($sequence);
+            } else {
+              $sequence = 1;
             }
+      
+            $flowData->evidence->set("query.sequence", $sequence + 1);
+      
+          } else {
 
-        }
-
-        return $keep;
+            $flowData->evidence->set(
+              "query.session-id",
+              uniqid()
+            );
+      
+            $flowData->evidence->set("query.sequence", 1);
+          }
 
     }
-    
 }

@@ -148,6 +148,24 @@ class evidence {
         if (isset($server["REMOTE_ADDR"])){
             $evidence["server.client-ip"] = $server["REMOTE_ADDR"];
         }
+
+        // Protocol
+
+        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+            $protocol = 'https';
+        } else {
+            $protocol = 'http';
+        }
+
+        // Override protocol with referer header if set
+
+        if(isset($_SERVER["HTTP_REFERER"]) && $_SERVER["HTTP_REFERER"]){
+
+            $protocol = parse_url($_SERVER["HTTP_REFERER"], PHP_URL_SCHEME);
+
+        }
+
+        $evidence["header.protocol"] = $protocol;
           
         $this->setArray($evidence);
   

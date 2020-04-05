@@ -108,6 +108,7 @@ class astrologyFlowElement extends flowElement {
         // a cookie with the user's latitude in it
         $result["getLatitude"] = "navigator.geolocation.getCurrentPosition(function(position) {
             document.cookie = \"latitude=\" + position.coords.latitude;
+            loadHemisphere();
         });";
 
         // Get the latitude from the above cookie
@@ -132,6 +133,10 @@ class astrologyFlowElement extends flowElement {
             "type" => "string",
             "description" => "the user's starsign"
         ),
+        "hemisphere" => array(
+            "type" => "string",
+            "description" => "the user's hemisphere"
+        ),
         "getLatitude" => array(
             "type" => "javascript",
             "description" => "JavaScript used to get a user's latitude"
@@ -151,8 +156,17 @@ class astrologyFlowElement extends flowElement {
 //! [class]
 //! [usage]
 
+// Add some callback settings for the page to make a request with extra evidence from the client side, in this case the same url with an extra query string.
+
+$javascriptBuilderSettings = array(
+    "_host" => "localhost:3000",
+    "_protocol" => "http",
+    "_endpoint" => "/?json"
+);
+
 // Make the pipeline and add the element we want to it
-$pipeline = (new pipelineBuilder())->add(new astrologyFlowElement())->build();
+
+$pipeline = (new pipelineBuilder(["javascriptBuilderSettings"=>$javascriptBuilderSettings]))->add(new astrologyFlowElement())->build();
 
 $flowData = $pipeline->createFlowData();
 
@@ -164,6 +178,17 @@ $flowData->evidence->setFromWebRequest();
 // Process the flowData
 
 $flowData->process();
+
+// The client side JavaScript calls back to this page 
+
+if(isset($_GET["json"])){
+
+    header("Content-Type: application/json; charset=UTF-8");
+    echo json_encode($flowData->jsonbundler->json);
+
+    return;
+
+}
 
 // Generate the HTML for the form that gets a user's starsign 
 
@@ -182,24 +207,45 @@ if($flowData->astrology->starSign){
 
 }
 
+$output .= "<div id='hemispheretext'>";
+
 if($flowData->astrology->hemisphere){
 
     $output .= "<p>Look at the " . $flowData->astrology->hemisphere . " hemisphere stars tonight!</p>";
-
+    
 }
 
-// Get the JavaScript needed for the geolocation lookup and output it
-
-$javaScript = $flowData->getWhere("type", "javascript");
+$output .= "</div>";
 
 $output .= "<script>";
 
-foreach($javaScript as $script){
+// This function will fire when the JSON data object is updated 
+// with information from the server.
+// The sequence is:
+// 1. Response contains JavaScript property 'getLatitude' that gets executed on the client
+// 2. This triggers another call to the webserver that passes the location as evidence
+// 3. The web server responds with new JSON data that contains the hemisphere based on the location.
+// 4. The JavaScript integrates the new JSON data and fires the onChange callback below.
 
-    $output .= $script;
-    $output .= " ";
+$output .= $flowData->javascriptbuilder->javascript;
 
-}
+$output .= 'loadHemisphere = function() {
+            fod.complete(function (data) {  
+                if(data.astrology.hemisphere) {          
+                    var para = document.createElement("p");
+                    var text = document.createTextNode("Look at the " + 
+                        data.astrology.hemisphere + " hemisphere stars tonight");
+                    para.appendChild(text);
+
+                    var element = document.getElementById("hemispheretext");
+                    var child = element.lastElementChild;  
+                    while (child) { 
+                        element.removeChild(child); 
+                        child = element.lastElementChild; 
+                    } 
+                    element.appendChild(para);
+                }
+            })};';
 
 $output .= "</script>";
 

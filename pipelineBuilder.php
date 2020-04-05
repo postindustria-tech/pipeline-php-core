@@ -23,12 +23,51 @@
 
 namespace fiftyone\pipeline\core;
 
-require_once(__DIR__ . "/pipeline.php");
-
 /**
     * Pipeline builder
 */
 class pipelineBuilder {
+
+    public function __construct($settings = array()){
+
+        // List of pipelines the flowElement has been added to
+        $this->pipelines = [];
+
+        if (isset($settings["addJavaScriptBuilder"])) {
+            $this->addJavaScriptBuilder = $settings["addJavascriptBuilder"];
+          } else {
+            $this->addJavaScriptBuilder = true;
+          }
+      
+          if (isset($settings["javascriptBuilderSettings"])) {
+            $this->javascriptBuilderSettings = $settings["javascriptBuilderSettings"];
+          }
+      
+    }
+
+    private function getJavaScriptElements() {
+        
+        $flowElements = [];
+    
+        if ($this->addJavaScriptBuilder) {
+          
+          // Add JavaScript elements
+    
+          $flowElements[] = new sequenceElement();
+          $flowElements[] = new jsonBundlerElement();
+    
+          if (property_exists($this, "javascriptBuilderSettings")) {
+    
+            $flowElements[] = new javascriptBuilderElement($this->javascriptBuilderSettings);
+
+          } else {
+            $flowElements[] = new javascriptBuilderElement([]);
+          }
+        }
+   
+        return $flowElements;
+
+      }
 
     /**
      * array of flowElements   
@@ -53,6 +92,8 @@ class pipelineBuilder {
      * @return pipeline
     */
     public function build(){
+
+        $this->flowElements = array_merge($this->flowElements, $this->getJavaScriptElements());
 
         return new pipeline($this->flowElements, $this->settings);
 

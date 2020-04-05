@@ -22,10 +22,13 @@
 	],
     "license": "EUPL-1.2", 
     "type": "library",
-    "require": {},
+    "require": {
+        "mustache/mustache": "^2.13"
+    },
     "autoload": {
         "classmap": [
             "elementData.php",
+            "aspectPropertyValue.php",
             "elementDataDictionary.php",
             "evidence.php",
             "evidenceKeyFilter.php",
@@ -34,7 +37,10 @@
             "flowElement.php",
             "logger.php",
             "pipeline.php",
-            "pipelineBuilder.php"
+            "pipelineBuilder.php",
+            "javascriptBuilder.php",
+            "jsonBundler.php",
+            "sequenceElement.php"
         ]
     }
 }

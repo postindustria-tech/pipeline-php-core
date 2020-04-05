@@ -25,36 +25,52 @@
 
 namespace fiftyone\pipeline\core;
 
-require_once(__DIR__ . "/evidenceKeyFilter.php");
+/**
+* aspectPropertyValue is a wrapper for a value that comes out of an engine
+* it allows you to check if a property has a meaningful value (->hasValue())
+* It throws an error with a message about why the value isn't available if the
+* value property is accessed and there is no value.
+*  
+*/
+class aspectPropertyValue {
 
-use fiftyone\pipeline\core\evidenceKeyFilter;
+    /**
+    * Constructor for aspectPropertyValue
+    * @param string if there is no value, the reason for there not being one
+    * @param mixed the value
+    */
+    public function __construct($noValueMessage = null, $value = "noValue"){
 
-class basicListEvidenceKeyFilter extends evidenceKeyFilter {
+        if($value !== "noValue"){
 
-    private $list;
-
-    public function __construct($list) {
-
-        $this->list = $list;
-
-    }
-
-    public function filterEvidenceKey($key) {
-
-        $keep = false;
-
-        foreach ($this->list as $evidenceKey){
-
-            if($key === $evidenceKey){
-
-                $keep = true;
-
-            }
+            $this->value = $value;
+            $this->noValueMessage = null;
+            $this->hasValue = true;
+            
+        }
+        
+        if($noValueMessage){
+            
+            $this->hasValue = false;
+            $this->noValueMessage = $noValueMessage;
 
         }
 
-        return $keep;
+    }
+
+    /**
+    * Magic getter to access the value or throw an error with the no value message
+    * @param string key
+    * @return mixed value
+    */
+    public function __get($key){
+
+        if($key === "value" && $this->noValueMessage){
+
+            throw new \Exception($this->noValueMessage);
+            
+        }
 
     }
-    
+
 }
