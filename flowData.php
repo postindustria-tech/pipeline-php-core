@@ -69,15 +69,11 @@ class flowData {
             // flowElement that set the error
 
             try {
-
               $flowElement->process($this);
-
-            } catch (\Exception $e){
-
-              $key = $flowElement->dataKey;
-
-              $this->setError($key, $e);
-
+            } catch (\Throwable $e) {
+              $this->setError($flowElement->dataKey, $e);
+            } catch (\Exception $e) {
+              $this->setError($flowElement->dataKey, $e);
             }
 
           }
