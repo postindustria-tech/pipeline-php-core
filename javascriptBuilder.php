@@ -39,11 +39,9 @@ class javascriptBuilderElement extends flowElement {
         $this->settings = [
 
             "_objName" => isset($settings["_objName"]) ? $settings["_objName"] : "fod",
-            "_protocol" => isset($settings["_protocol"]) ? $settings["_protocol"] : false,
+            "_protocol" => isset($settings["_protocol"]) ? $settings["_protocol"] : null,
             "_host" => isset($settings["_host"]) ? $settings["_host"] : null,
             "_endpoint" => isset($settings["_endpoint"]) ? $settings["_endpoint"] : "",
-            "_overrideHost" => isset($settings["_overrideHost"]) ? $settings["_overrideHost"] : false,
-            "_overrideProtocol" => isset($settings["_overrideProtocol"]) ? $settings["_overrideProtocol"] : false,
             "_enableCookies" => isset($settings["_enableCookies"]) ? $settings["_enableCookies"] : true
 
         ];
@@ -81,7 +79,7 @@ class javascriptBuilderElement extends flowElement {
         $protocol = $this->settings["_protocol"];
         $host = $this->settings["_host"];
 
-        if ($this->settings["_overrideProtocol"]) {
+        if (!isset($protocol) || trim($protocol) === '') {
             
             // Check if protocol is provided in evidence
 
@@ -90,14 +88,18 @@ class javascriptBuilderElement extends flowElement {
             }
             
         }
+        if (!isset($protocol) || trim($protocol) === '') {
+            $protocol = "https";
+        }
 
-        if ($this->settings["_overrideHost"]) {
-        // Check if host is provided in evidence
+
+        if (!isset($host) || trim($host) === '') {
+            
+            // Check if host is provided in evidence
 
             if ($flowData->evidence->get("header.host")) {
                 $host = $flowData->evidence->get("header.host");
             }
-
 
         }
 
