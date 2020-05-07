@@ -100,9 +100,9 @@ class JavaScriptBundlerTests extends TestCase {
             'test' => 
             array (
               'javascript' => 'console.log(\'hello world\')',
-              'apvGood' => 'Value',
-              'apvBad' => NULL,
-              'apvBadnullreason' => 'No value',
+              'apvgood' => 'Value',
+              'apvbad' => NULL,
+              'apvbadnullreason' => 'No value',
               'normal' => true,
             )
         );

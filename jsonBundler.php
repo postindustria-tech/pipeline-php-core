@@ -90,9 +90,9 @@ class jsonBundlerElement extends flowElement {
                 continue;
               }
       
-              $output[$flowElement->dataKey][$propertyKey] = $value;
+              $output[strtolower($flowElement->dataKey)][strtolower($propertyKey)] = $value;
               if($value == null){
-                $output[$flowElement->dataKey][$propertyKey . "nullreason"] = $nullReason;
+                $output[strtolower($flowElement->dataKey)][strtolower($propertyKey) . "nullreason"] = $nullReason;
               }
     
               $sequence = $flowData->evidence->get("query.sequence");
@@ -110,7 +110,7 @@ class jsonBundlerElement extends flowElement {
       
                 if (isset($property["type"]) && strtolower($property["type"]) === "javascript"
                 ) {
-                  $output["javascriptProperties"][] = $flowElement->dataKey . "." . $propertyKey;
+                  $output["javascriptProperties"][] = strtolower($flowElement->dataKey) . "." . strtolower($propertyKey);
                 }
 
               }
