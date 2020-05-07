@@ -34,9 +34,9 @@ class logger {
     private $levels = ["trace", "debug", "information", "warning", "error", "critical"];
 
     /**
-     * Make a logger, default logger type logs to file
-     * @param string level
-     * @param array settings
+     * Create a logger
+     * @param string level ("trace", "debug", "information", "warning", "error", "critical")
+     * @param array settings - customs settings for a logger
      *     
     **/
     function __construct($level, $settings = array()) {
@@ -77,7 +77,13 @@ class logger {
 
     }
 
+    /**
+     * Internal logging function overriden by specific loggers
+     * @param array log 
+    */
     public function logInternal($log){
+
+        return true;
 
         // file_put_contents($this->settings["location"], json_encode($log).PHP_EOL , FILE_APPEND | LOCK_EX);
 

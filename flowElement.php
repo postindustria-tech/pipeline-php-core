@@ -43,8 +43,8 @@ class flowElement {
     public $properties = [];
     
     /**
-     * General wrapper function that calls processInternal
-     * Not called directly
+     * General wrapper function that calls a flowElement's processInternal method     
+     * @param flowData
     */
     public function process($flowData) {
 
@@ -55,6 +55,7 @@ class flowElement {
     /**
      * Function for getting the flowElement's evidenceKeyFilter
      * Used by the filterEvidence method
+     * @return evidenceKeyFilter
     */
     public function getEvidenceKeyFilter(){
 
@@ -75,6 +76,11 @@ class flowElement {
 
     }
 
+    /**
+     * Filter flowData evidence using the flowElement's evidenceKeyFilter
+     * @param flowData
+     * @return mixed
+    */
     public function filterEvidenceKey($key){
 
         $filter = $this->getEvidenceKeyFilter();
@@ -84,7 +90,8 @@ class flowElement {
     }
 
     /**
-     * Process flowData
+     * Process flowData - this is process function
+     * is usually overriden by specific flowElements to do their core work
      * @param flowData
     */
     public function processInternal($flowData){
@@ -93,12 +100,23 @@ class flowElement {
 
     }
 
+    /**
+     * Get properties
+     * is usually overriden by specific flowElements
+     * @return $
+    */
     public function getProperties(){
 
         return $this->properties;
     
     }
 
+    /**
+     * Update a flowElement's property list
+     * This is used by elements that are only aware of their properites
+     * at a later stage, such as cloud request based flowElements or
+     * flowElements that change their properties later based on new datafiles 
+    */
     public function updatePropertyList(){
 
         foreach($this->pipelines as $pipeline){

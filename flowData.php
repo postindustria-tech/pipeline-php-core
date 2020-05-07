@@ -132,6 +132,11 @@ class flowData {
 
     }
 
+    /**
+     * Magic getter to allow $flowData->flowElementKey getting 
+     * @param string flowElementKey
+     * @return $elementData
+    */
     public function __get($flowElementKey){
 
       if(isset($this->data[$flowElementKey])){

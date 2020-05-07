@@ -29,16 +29,27 @@ require_once(__DIR__ . "/evidenceKeyFilter.php");
 
 use fiftyone\pipeline\core\evidenceKeyFilter;
 
+/**
+  * An instance of evidenceKeyFilter that uses a simple array of keys
+  * Evidence not using these keys is filtered out
+*/
 class basicListEvidenceKeyFilter extends evidenceKeyFilter {
 
     private $list;
 
+    /**
+    * @param mixed[] an array of keys to keep 
+    */
     public function __construct($list) {
 
         $this->list = $list;
 
     }
 
+    /**
+    * @param string key to check in the filter
+    * @return boolean is this key in the filter's keys list? 
+    */
     public function filterEvidenceKey($key) {
 
         $keep = false;

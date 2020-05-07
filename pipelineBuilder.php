@@ -99,6 +99,11 @@ class pipelineBuilder {
 
     }
 
+    /**
+     * Add an instance of the logger class to the pipeline
+     * @param logger
+     * @return pipeline
+    */
     public function addLogger($logger){
 
         $this->settings["logger"] = $logger;

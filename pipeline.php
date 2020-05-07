@@ -100,6 +100,10 @@ class pipeline {
 
     }
 
+    /**
+     * Update metadata store for a flowElement based on its list of properties
+     * @param flowElement
+     */
     public function updatePropertyDatabaseForFlowElement($flowElement){
 
         $dataKey = $flowElement->dataKey;
