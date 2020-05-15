@@ -32,6 +32,10 @@ class jsFilter extends evidenceKeyFilter {
 
 }
 
+/**
+ * The JavaScriptBuilder aggregates JavaScript properties from FlowElements in the pipeline. This JavaScript also (when needed) generates a fetch request to retrieve additional properties populated with data from the client side
+ * It depends on the JSON Bundler element (both are automatically added to a pipeline unless specifically removed) for its list of properties. The results of the JSON Bundler should also be used in a user-specified endpoint which retrieves the JSON from the client side. The JavaScriptBuilder is constructed with a url for this endpoint.
+ */
 class javascriptBuilderElement extends flowElement {
 
     public function __construct($settings = array()){

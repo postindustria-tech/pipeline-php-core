@@ -23,6 +23,11 @@
 
 namespace fiftyone\pipeline\core;
 
+/**
+ * The JSONBundler aggregates all properties from FlowElements into a JSON object
+ * It is used for retrieving via an endpoint from the client side via the JavaScriptBuilder and also used inside the JavaScriptBuilder itself to pass properties to the client side.
+ * Both this and the JavaScriptBuilder element are automatically added to a pipeline unless specifically ommited in the PipelineBuilder
+ */
 class jsonBundlerElement extends flowElement {
 
     public $dataKey = "jsonbundler";

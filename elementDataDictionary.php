@@ -26,8 +26,8 @@ namespace fiftyone\pipeline\core;
 use fiftyone\pipeline\core\elementData;
 
 /**
-* elementData class extension that stores content as dictionary
-*/
+* An extension of elementData with dictionary object storage / lookup
+**/
 class elementDataDictionary extends elementData {
 
     /**

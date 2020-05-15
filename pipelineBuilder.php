@@ -24,7 +24,9 @@
 namespace fiftyone\pipeline\core;
 
 /**
-    * Pipeline builder
+  * A PipelineBuilder generates a Pipeline object
+  * Before construction of the Pipeline, FlowElements are added to it
+  * There are also options for how JavaScript is output from the Pipeline
 */
 class pipelineBuilder {
 

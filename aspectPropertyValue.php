@@ -26,11 +26,9 @@
 namespace fiftyone\pipeline\core;
 
 /**
-* aspectPropertyValue is a wrapper for a value that comes out of an engine
-* it allows you to check if a property has a meaningful value (->hasValue())
-* It throws an error with a message about why the value isn't available if the
-* value property is accessed and there is no value.
-*  
+   * An AspectPropertyValue is a wrapper for a value
+   * It lets you check this wrapper has a value inside it
+   * If not value is set, a specific no value message is returned
 */
 class aspectPropertyValue {
 

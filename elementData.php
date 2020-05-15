@@ -24,7 +24,8 @@
 namespace fiftyone\pipeline\core;
 
 /**
-* Core elementData class
+ * Stores information created by a flowElement based on flowData.
+ * Stored in flowData
 */
 class elementData {
 

@@ -27,10 +27,9 @@ require_once(__DIR__ . "/flowData.php");
 require_once(__DIR__ . "/logger.php");
 
 /**
-     * Core pipeline class
-     * Creates flowData which can store evidence and data
-     * Contains flowElements which read evidence and populate data in flowElement
-*/
+* Pipeline holding a list of flowElements for processing, can create flowData that will be passed through these, collecting elementData
+* Should be constructed through the PipelineBuilder class
+**/
 class pipeline {
 
     public $flowElements;

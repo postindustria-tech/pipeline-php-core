@@ -24,8 +24,11 @@
 namespace fiftyone\pipeline\core;
 
 /**
-  * An evidenceKeyFilter added to a flowElement 
-  * Allows a flowElement to return a subset of evidence it's interested in
+  * An evidence key filter is added to a flowElement
+  * It tells the pipeline which evidence it is interested in
+  * This can be used to determine whether a request can be cached
+  * Or to filter out evidence not needed by any element in a pipeline
+  * This base class is always extended for a specific filter type
 */
 class evidenceKeyFilter {
 

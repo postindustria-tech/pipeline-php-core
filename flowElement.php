@@ -27,9 +27,12 @@ require_once(__DIR__ . "/flowData.php");
 require_once(__DIR__ . "/evidenceKeyFilter.php");
 
 /**
-    * flowElement can read evidence from flowData and set data on it when processed. 
-    * Added to a pipeline 
-*/
+  * A FlowElement is placed inside a pipeline
+  * It receives Evidence via a FlowData object
+  * It uses this to optionally create ElementData on the Flowdata
+  * It has a unique dataKey which is used to extract data from the FlowData
+  * Any errors in processing are caught in the FlowData's errors object
+**/
 class flowElement {
 
     public function __construct(){

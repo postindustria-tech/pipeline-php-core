@@ -24,7 +24,7 @@
 namespace fiftyone\pipeline\core;
 
 /**
-  * Evidence class for storing evidence inside flowdata
+  * Storage of evidence on a flowData object
 */
 class evidence {
 
