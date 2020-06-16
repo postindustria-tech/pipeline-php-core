@@ -4,7 +4,7 @@
  * Copyright 2019 51 Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY.
  *
- * This Original Work is licensed under the European Union Public Licence (EUPL) 
+ * This Original Work is licensed under the European Union Public Licence (EUPL)
  * v.1.2 and is subject to its terms as set out below.
  *
  * If a copy of the EUPL was not distributed with this file, You can obtain
@@ -14,45 +14,41 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
 namespace fiftyone\pipeline\core;
 
 /**
-  * An evidence key filter is added to a flowElement
-  * It tells the pipeline which evidence it is interested in
+  * An evidence key filter is added to a FlowElement
+  * It tells the Pipeline which evidence it is interested in
   * This can be used to determine whether a request can be cached
-  * Or to filter out evidence not needed by any element in a pipeline
+  * Or to filter out evidence not needed by any element in a Pipeline
   * This base class is always extended for a specific filter type
 */
-class evidenceKeyFilter {
+class EvidenceKeyFilter
+{
 
     /**
     * filterevidence from an object
     * @param mixed[] evidence dicitonary contents
     * @return mixed[] filtered evidence dictionary contents
     */
-    public function filterEvidence($evidenceKeyObject) {
-
+    public function filterEvidence($evidenceKeyObject)
+    {
         $filtered = array();
 
-        forEach($evidenceKeyObject as $key => $value){
-
-            if($this->filterEvidenceKey($key)) {
-
+        foreach ($evidenceKeyObject as $key => $value) {
+            if ($this->filterEvidenceKey($key)) {
                 $filtered[$key] = $value;
-
             }
-
         };
 
         return $filtered;
-
     }
 
     /**
@@ -60,10 +56,8 @@ class evidenceKeyFilter {
     * @param string property name
     * @return boolean should this be filtered out or not?
     */
-    public function filterEvidenceKey($key) {
-
+    public function filterEvidenceKey($key)
+    {
         return true;
-
     }
-    
 }

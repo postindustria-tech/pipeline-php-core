@@ -4,7 +4,7 @@
  * Copyright 2019 51 Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY.
  *
- * This Original Work is licensed under the European Union Public Licence (EUPL) 
+ * This Original Work is licensed under the European Union Public Licence (EUPL)
  * v.1.2 and is subject to its terms as set out below.
  *
  * If a copy of the EUPL was not distributed with this file, You can obtain
@@ -14,24 +14,23 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
 namespace fiftyone\pipeline\core;
 
-require_once(__DIR__ . "/flowData.php");
-require_once(__DIR__ . "/logger.php");
-
 /**
-* Pipeline holding a list of flowElements for processing, can create flowData that will be passed through these, collecting elementData
+* Pipeline holding a list of FlowElements for processing,
+* can create FlowData that will be passed through these,
+* collecting ElementData
 * Should be constructed through the PipelineBuilder class
 **/
-class pipeline {
-
+class Pipeline
+{
     public $flowElements;
     public $flowElementsList = array();
     public $logger;
@@ -39,19 +38,15 @@ class pipeline {
 
     /**
      * Pipeline constructor
-     * @param array list of flowElements
+     * @param FlowElement[] list of FlowElements
      * @param array settings array
     */
-    public function __construct($flowElements, $settings) {
-
-        if(!isset($settings["logger"])){
-
-            $this->logger = new logger(null, null);
-
+    public function __construct($flowElements, $settings)
+    {
+        if (!isset($settings["logger"])) {
+            $this->logger = new Logger(null, null);
         } else {
-
             $this->logger = $settings["logger"];
-
         }
 
         $this->log("info", "test");
@@ -60,112 +55,86 @@ class pipeline {
 
         $this->propertyDatabase = array();
 
-        forEach($flowElements as $flowElement){
-
+        foreach ($flowElements as $flowElement) {
             $this->flowElementsList[$flowElement->dataKey] = $flowElement;
 
             $flowElement->pipelines[] = $this;
 
+            $flowElement->onRegistration($this);
+
             $this->updatePropertyDatabaseForFlowElement($flowElement);
-
         }
-
     }
 
     /**
-     * Create a flowData based on what's in the pipeline
-     * @return flowData
+     * Create a FlowData based on what's in the Pipeline
+     * @return FlowData
     */
-    public function createFlowData(){
-
-        return new flowData($this, $this->flowElements);
-
+    public function createFlowData()
+    {
+        return new FlowData($this, $this->flowElements);
     }
 
-    public function log($level, $message){
-
+    public function log($level, $message)
+    {
         $this->logger->log($level, $message);
-
     }
 
     /**
-     * Get a flowElement by its name
-     * @param String name
-     * @return flowElement
+     * Get a FlowElement by its name
+     * @param string name
+     * @return FlowElement
      */
-    public function getElement($key){
-
+    public function getElement($key)
+    {
         return $this->flowElementsList[$key];
-
     }
 
     /**
-     * Update metadata store for a flowElement based on its list of properties
-     * @param flowElement
+     * Update metadata store for a FlowElement based on its list of properties
+     * @param FlowElement
      */
-    public function updatePropertyDatabaseForFlowElement($flowElement){
-
+    public function updatePropertyDatabaseForFlowElement($flowElement)
+    {
         $dataKey = $flowElement->dataKey;
 
-        // First unset any properties stored by the flowElement
+        // First unset any properties stored by the FlowElement
 
         foreach ($this->propertyDatabase as $propertyValues) {
-
             foreach ($propertyValues as $propertyList) {
-
                 foreach ($propertyList as $key => $info) {
-                    
-                    if($info["flowElement"] === $dataKey){
-
+                    if ($info["flowElement"] === $dataKey) {
                         unset($propertyList[$key]);
-
                     }
-
                 }
-                
             }
-            
         }
 
         $properties = $flowElement->getProperties();
 
-        forEach($properties as $key => $property){
-
-            forEach($property as $metaKey => $metaValue){
-
+        foreach ($properties as $key => $property) {
+            foreach ($property as $metaKey => $metaValue) {
                 $metaKey = \strtolower($metaKey);
 
 
                 if (!isset($this->propertyDatabase[$metaKey])) {
-
                     $this->propertyDatabase[$metaKey] = array();
-
                 }
 
-                if(is_string($metaValue)){
-
+                if (is_string($metaValue)) {
                     $metaValue = \strtolower($metaValue);
-
                 } else {
-
                     continue;
-
                 }
 
                 if (!isset($this->propertyDatabase[$metaKey][$metaValue])) {
-
                     $this->propertyDatabase[$metaKey][$metaValue] = array();
-
                 }
 
                 $property["flowElement"] = $dataKey;
 
                 $this->propertyDatabase[$metaKey][$metaValue][$key] = $property;
-
             }
-    
         }
-        
     }
-
 }

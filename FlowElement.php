@@ -4,7 +4,7 @@
  * Copyright 2019 51 Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY.
  *
- * This Original Work is licensed under the European Union Public Licence (EUPL) 
+ * This Original Work is licensed under the European Union Public Licence (EUPL)
  * v.1.2 and is subject to its terms as set out below.
  *
  * If a copy of the EUPL was not distributed with this file, You can obtain
@@ -14,120 +14,117 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
 namespace fiftyone\pipeline\core;
 
-require_once(__DIR__ . "/flowData.php");
-require_once(__DIR__ . "/evidenceKeyFilter.php");
-
 /**
-  * A FlowElement is placed inside a pipeline
+  * A FlowElement is placed inside a Pipeline
   * It receives Evidence via a FlowData object
-  * It uses this to optionally create ElementData on the Flowdata
+  * It uses this to optionally create ElementData on the FlowData
   * It has a unique dataKey which is used to extract data from the FlowData
   * Any errors in processing are caught in the FlowData's errors object
 **/
-class flowElement {
+class FlowElement
+{
+    public function __construct()
+    {
 
-    public function __construct(){
-
-        // List of pipelines the flowElement has been added to
+        // List of Pipelines the FlowElement has been added to
         $this->pipelines = [];
-
     }
 
     public $dataKey;
     public $properties = [];
     
     /**
-     * General wrapper function that calls a flowElement's processInternal method     
-     * @param flowData
+     * General wrapper function that calls a FlowElement's processInternal method
+     * @param FlowData
     */
-    public function process($flowData) {
-
+    public function process($flowData)
+    {
         return $this->processInternal($flowData);
-
     }
 
     /**
-     * Function for getting the flowElement's evidenceKeyFilter
+     * Function for getting the FlowElement's EvidenceKeyFilter
      * Used by the filterEvidence method
-     * @return evidenceKeyFilter
+     * @return EvidenceKeyFilter
     */
-    public function getEvidenceKeyFilter(){
-
-        return new evidenceKeyFilter();
-
+    public function getEvidenceKeyFilter()
+    {
+        return new EvidenceKeyFilter();
     }
 
     /**
-     * Filter flowData evidence using the flowElement's evidenceKeyFilter
-     * @param flowData
+     * Filter FlowData evidence using the FlowElement's EvidenceKeyFilter
+     * @param FlowData
      * @return mixed
     */
-    public function filterEvidence($flowData){
-
+    public function filterEvidence($flowData)
+    {
         $filter = $this->getEvidenceKeyFilter();
 
         return $filter->filterEvidence($flowData->evidence->getAll());
-
     }
 
     /**
-     * Filter flowData evidence using the flowElement's evidenceKeyFilter
-     * @param flowData
+     * Filter FlowData evidence using the FlowElement's EvidenceKeyFilter
+     * @param FlowData
      * @return mixed
     */
-    public function filterEvidenceKey($key){
-
+    public function filterEvidenceKey($key)
+    {
         $filter = $this->getEvidenceKeyFilter();
 
         return $filter->filterEvidenceKey($key);
-
     }
 
     /**
-     * Process flowData - this is process function
-     * is usually overriden by specific flowElements to do their core work
-     * @param flowData
+     * Callback called when an engine is added to a pipeline
+     * @param Pipeline
+     * @return void
     */
-    public function processInternal($flowData){
+    public function onRegistration($pipeline)
+    {
+        return $pipeline;
+    }
 
+    /**
+     * Process FlowData - this is process function
+     * is usually overriden by specific FlowElements to do their core work
+     * @param FlowData
+    */
+    public function processInternal($flowData)
+    {
         return true;
-
     }
 
     /**
      * Get properties
-     * is usually overriden by specific flowElements
-     * @return $
+     * is usually overriden by specific FlowElements
+     * @return array key value array of properties
     */
-    public function getProperties(){
-
+    public function getProperties()
+    {
         return $this->properties;
-    
     }
 
     /**
-     * Update a flowElement's property list
+     * Update a FlowElement's property list
      * This is used by elements that are only aware of their properites
-     * at a later stage, such as cloud request based flowElements or
-     * flowElements that change their properties later based on new datafiles 
+     * at a later stage, such as cloud request based FlowElements or
+     * FlowElements that change their properties later based on new datafiles
     */
-    public function updatePropertyList(){
-
-        foreach($this->pipelines as $pipeline){
-
+    public function updatePropertyList()
+    {
+        foreach ($this->pipelines as $pipeline) {
             $pipeline->updatePropertyDatabaseForFlowElement($this);
-
         }
-
     }
-
 }

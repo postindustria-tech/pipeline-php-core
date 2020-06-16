@@ -4,7 +4,7 @@
  * Copyright 2019 51 Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY.
  *
- * This Original Work is licensed under the European Union Public Licence (EUPL) 
+ * This Original Work is licensed under the European Union Public Licence (EUPL)
  * v.1.2 and is subject to its terms as set out below.
  *
  * If a copy of the EUPL was not distributed with this file, You can obtain
@@ -14,31 +14,30 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
 namespace fiftyone\pipeline\core;
 
 /**
-  * Storage of evidence on a flowData object
+  * Storage of evidence on a FlowData object
 */
-class evidence {
-
+class Evidence
+{
     protected $flowData;
     protected $evidence = array();
 
     /**
         * evidence container constructor
-        * @param flowData parent flowData
+        * @param FlowData parent FlowData
     */
-    public function __construct ($flowData) {
-
+    public function __construct($flowData)
+    {
         $this->flowData = $flowData;
-
     }
 
     /**
@@ -46,46 +45,34 @@ class evidence {
         * @param string key
         * @param mixed value
     */
-    public function set($key, $value) {
-
+    public function set($key, $value)
+    {
         $keep = false;
 
-        foreach($this->flowData->pipeline->flowElements as $flowElement){
-
-            if($flowElement->filterEvidenceKey($key)){
-
+        foreach ($this->flowData->pipeline->flowElements as $flowElement) {
+            if ($flowElement->filterEvidenceKey($key)) {
                 $keep = true;
-
             }
-
         }
 
-        if($keep){
-
+        if ($keep) {
             $this->evidence[$key] = $value;
-        
         }
-
     }
 
     /**
         * Helper function to set multiple pieces of evidence from an array
         * @param mixed[]
     */
-    public function setArray($array) {
-
-        if(!is_array($array)){
-
+    public function setArray($array)
+    {
+        if (!is_array($array)) {
             $this->flowData->setError("core", "Must pass key and value");
-
         }
 
-        foreach($array as $key => $value){
-
+        foreach ($array as $key => $value) {
             $this->set($key, $value);
-
         }
-
     }
 
     /**
@@ -94,58 +81,45 @@ class evidence {
         * @param $_SERVER
         * @param $_COOKIE
     */
-    public function setFromWebRequest($server = null, $cookies = null, $query = null) {
-
-        if(!$server){
-
+    public function setFromWebRequest($server = null, $cookies = null, $query = null)
+    {
+        if (!$server) {
             $server = $_SERVER;
-
         }
 
-        if(!$cookies){
-
+        if (!$cookies) {
             $cookies = $_COOKIE;
-
         }
 
-        if(!$query){
-
+        if (!$query) {
             $query = $_GET;
-
         }
 
-        $evidence = array (); 
+        $evidence = array();
   
-        foreach($server as $name => $value) { 
-        
-          if (substr($name, 0, 5) == 'HTTP_') {
+        foreach ($server as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
   
-              $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                $key = strtolower($key);
   
-              $key = strtolower($key);
-  
-              $evidence["header." . $key] = $value; 
-          }
-
+                $evidence["header." . $key] = $value;
+            }
         }
   
-        foreach($cookies as $key => $value){
-  
-          $evidence["cookie." . $key] = $value;
-  
+        foreach ($cookies as $key => $value) {
+            $evidence["cookie." . $key] = $value;
         }
 
-        foreach($query as $key => $value){
-  
+        foreach ($query as $key => $value) {
             $evidence["query." . $key] = $value;
-    
-          }
+        }
   
-        if (isset($server["SERVER_ADDR"])){
+        if (isset($server["SERVER_ADDR"])) {
             $evidence["server.host-ip"] = $server["SERVER_ADDR"];
         }
 
-        if (isset($server["REMOTE_ADDR"])){
+        if (isset($server["REMOTE_ADDR"])) {
             $evidence["server.client-ip"] = $server["REMOTE_ADDR"];
         }
 
@@ -159,16 +133,13 @@ class evidence {
 
         // Override protocol with referer header if set
 
-        if(isset($_SERVER["HTTP_REFERER"]) && $_SERVER["HTTP_REFERER"]){
-
+        if (isset($_SERVER["HTTP_REFERER"]) && $_SERVER["HTTP_REFERER"]) {
             $protocol = parse_url($_SERVER["HTTP_REFERER"], PHP_URL_SCHEME);
-
         }
 
         $evidence["header.protocol"] = $protocol;
           
         $this->setArray($evidence);
-  
     }
 
 
@@ -176,29 +147,21 @@ class evidence {
         * Get a piece of evidence by key
         * @param string key
     */
-    public function get($key) {
-
-        if(isset($this->evidence[$key])){
-
+    public function get($key)
+    {
+        if (isset($this->evidence[$key])) {
             return $this->evidence[$key];
-
         } else {
-
             return null;
-
         };
-
-        
     }
 
     /**
         * Get all evidence
         * @return mixed[]
     */
-    public function getAll(){
-
+    public function getAll()
+    {
         return $this->evidence;
-
     }
-
 }

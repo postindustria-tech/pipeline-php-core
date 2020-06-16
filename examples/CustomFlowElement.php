@@ -4,7 +4,7 @@
  * Copyright 2019 51 Degrees Mobile Experts Limited, 5 Charlotte Close,
  * Caversham, Reading, Berkshire, United Kingdom RG4 7BY.
  *
- * This Original Work is licensed under the European Union Public Licence (EUPL) 
+ * This Original Work is licensed under the European Union Public Licence (EUPL)
  * v.1.2 and is subject to its terms as set out below.
  *
  * If a copy of the EUPL was not distributed with this file, You can obtain
@@ -14,86 +14,85 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
 /**
-@example customFlowElement.php
-
-This example demonstrates the creation of a custom flow element. In this case 
-the flowElement takes the results of a client side form collecting 
-date of birth, setting this as evidence on a flowData object to calculate 
-a person's starsign. The flowElement also serves additional JavaScript 
-which gets a user's geolocation and saves the latitude as a cookie. 
-This latitude is also then passed in to the flowData to calculate if 
-a person is in the northern or southern hemispheres.
+* @example CustomFlowElement.php
+*
+* This example demonstrates the creation of a custom flow element. In this case
+* the FlowElement takes the results of a client side form collecting
+* date of birth, setting this as evidence on a FlowData object to calculate
+* a person's starsign. The FlowElement also serves additional JavaScript
+* which gets a user's geolocation and saves the latitude as a cookie.
+* This latitude is also then passed in to the FlowData to calculate if
+* a person is in the northern or southern hemispheres.
 
 */
 
 include(__DIR__ . "/../vendor/autoload.php");
 
-use fiftyone\pipeline\core\pipelineBuilder;
-use fiftyone\pipeline\core\basicListEvidenceKeyFilter;
-use fiftyone\pipeline\core\flowElement;
-use fiftyone\pipeline\core\elementDataDictionary;
+use fiftyone\pipeline\core\PipelineBuilder;
+use fiftyone\pipeline\core\BasicListEvidenceKeyFilter;
+use fiftyone\pipeline\core\FlowElement;
+use fiftyone\pipeline\core\ElementDataDictionary;
 
 // Function to get star sign from month and day
-function getStarSign($month, $day) {
-
+function getStarSign($month, $day)
+{
     if (($month == 1 && $day <= 20) || ($month == 12 && $day >= 22)) {
         return "capricorn";
-    } else if (($month == 1 && $day >= 21) || ($month == 2 && $day <= 18)) {
+    } elseif (($month == 1 && $day >= 21) || ($month == 2 && $day <= 18)) {
         return "aquarius";
-    } else if (($month == 2 && $day >= 19) || ($month == 3 && $day <= 20)) {
+    } elseif (($month == 2 && $day >= 19) || ($month == 3 && $day <= 20)) {
         return "pisces";
-    } else if (($month == 3 && $day >= 21) || ($month == 4 && $day <= 20)) {
+    } elseif (($month == 3 && $day >= 21) || ($month == 4 && $day <= 20)) {
         return "aries";
-    } else if (($month == 4 && $day >= 21) || ($month == 5 && $day <= 20)) {
+    } elseif (($month == 4 && $day >= 21) || ($month == 5 && $day <= 20)) {
         return "taurus";
-    } else if (($month == 5 && $day >= 21) || ($month == 6 && $day <= 20)) {
+    } elseif (($month == 5 && $day >= 21) || ($month == 6 && $day <= 20)) {
         return "gemini";
-    } else if (($month == 6 && $day >= 22) || ($month == 7 && $day <= 22)) {
+    } elseif (($month == 6 && $day >= 22) || ($month == 7 && $day <= 22)) {
         return "cancer";
-    } else if (($month == 7 && $day >= 23) || ($month == 8 && $day <= 23)) {
+    } elseif (($month == 7 && $day >= 23) || ($month == 8 && $day <= 23)) {
         return "leo";
-    } else if (($month == 8 && $day >= 24) || ($month == 9 && $day <= 23)) {
+    } elseif (($month == 8 && $day >= 24) || ($month == 9 && $day <= 23)) {
         return "virgo";
-    } else if (($month == 9 && $day >= 24) || ($month == 10 && $day <= 23)) {
+    } elseif (($month == 9 && $day >= 24) || ($month == 10 && $day <= 23)) {
         return "libra";
-    } else if (($month == 10 && $day >= 24) || ($month == 11 && $day <= 22)) {
+    } elseif (($month == 10 && $day >= 24) || ($month == 11 && $day <= 22)) {
         return "scorpio";
-    } else if (($month == 11 && $day >= 23) || ($month == 12 && $day <= 21)) {
+    } elseif (($month == 11 && $day >= 23) || ($month == 12 && $day <= 21)) {
         return "sagittarius";
     }
-
 };
 
 //! [class]
 //! [declaration]
-class astrologyFlowElement extends flowElement {
-//! [declaration]
+class AstrologyFlowElement extends FlowElement
+{
+    //! [declaration]
 
-    // datakey used to categorise data coming back from this 
-    // flowElement in a pipeline
-    public $dataKey = "astrology"; 
+    // datakey used to categorise data coming back from this
+    // FlowElement in a Pipeline
+    public $dataKey = "astrology";
 
-    // The processInternal function is the core working of a flowElement. 
-    // It takes flowData, reads evidence and returns data.
-    public function processInternal($flowData){
-
+    // The processInternal function is the core working of a FlowElement.
+    // It takes FlowData, reads evidence and returns data.
+    public function processInternal($FlowData)
+    {
         $result = [];
 
         
-        // Get the date of birth from the query string (submitted through 
+        // Get the date of birth from the query string (submitted through
         // a form on the client side)
-        $dateOfBirth = $flowData->evidence->get("query.dateOfBirth");
+        $dateOfBirth = $FlowData->evidence->get("query.dateOfBirth");
         
         if ($dateOfBirth) {
-
             $dateOfBirth = explode("-", $dateOfBirth);
 
             $month = $dateOfBirth[1];
@@ -101,10 +100,9 @@ class astrologyFlowElement extends flowElement {
 
 
             $result["starSign"] = getStarSign($month, $day);
-
         }
 
-        // Serve some JavaScript to the user that will be used to save 
+        // Serve some JavaScript to the user that will be used to save
         // a cookie with the user's latitude in it
         $result["getLatitude"] = "navigator.geolocation.getCurrentPosition(function(position) {
             document.cookie = \"latitude=\" + position.coords.latitude;
@@ -112,20 +110,17 @@ class astrologyFlowElement extends flowElement {
         });";
 
         // Get the latitude from the above cookie
-        $latitude = $flowData->evidence->get("cookie.latitude");
+        $latitude = $FlowData->evidence->get("cookie.latitude");
 
         // Calculate the hemisphere
         if ($latitude) {
-
             $result["hemisphere"] = $latitude > 0 ? "Northern" : "Southern";
-
         }
 
 
-        $data = new elementDataDictionary($this, $result);
+        $data = new ElementDataDictionary($this, $result);
 
-        $flowData->setElementData($data);
-
+        $FlowData->setElementData($data);
     }
 
     public $properties = array(
@@ -143,14 +138,13 @@ class astrologyFlowElement extends flowElement {
         )
     );
 
-    public function getEvidenceKeyFilter(){
+    public function getEvidenceKeyFilter()
+    {
 
-        // A filter (in this case a basic list) stating which evidence 
-        // the flowElement is interested in
-        return new basicListEvidenceKeyFilter(["cookie.latitude", "query.dateOfBirth"]); 
-
+        // A filter (in this case a basic list) stating which evidence
+        // the FlowElement is interested in
+        return new BasicListEvidenceKeyFilter(["cookie.latitude", "query.dateOfBirth"]);
     }
-    
 }
 
 //! [class]
@@ -159,38 +153,36 @@ class astrologyFlowElement extends flowElement {
 // Add some callback settings for the page to make a request with extra evidence from the client side, in this case the same url with an extra query string.
 
 $javascriptBuilderSettings = array(
-    "_host" => "localhost:3000",
-    "_protocol" => "http",
-    "_endpoint" => "/?json"
+    "host" => "localhost:3000",
+    "protocol" => "http",
+    "endpoint" => "/?json"
 );
 
-// Make the pipeline and add the element we want to it
+// Make the Pipeline and add the element we want to it
 
-$pipeline = (new pipelineBuilder(["javascriptBuilderSettings"=>$javascriptBuilderSettings]))->add(new astrologyFlowElement())->build();
+$Pipeline = (new PipelineBuilder(["javascriptBuilderSettings"=>$javascriptBuilderSettings]))->add(new AstrologyFlowElement())->build();
 
-$flowData = $pipeline->createFlowData();
+$FlowData = $Pipeline->createFlowData();
 
-// Add any information from the request (headers, cookies and additional 
+// Add any information from the request (headers, cookies and additional
 // client side provided information)
 
-$flowData->evidence->setFromWebRequest();
+$FlowData->evidence->setFromWebRequest();
 
-// Process the flowData
+// Process the FlowData
 
-$flowData->process();
+$FlowData->process();
 
-// The client side JavaScript calls back to this page 
+// The client side JavaScript calls back to this page
 
-if(isset($_GET["json"])){
-
+if (isset($_GET["json"])) {
     header("Content-Type: application/json; charset=UTF-8");
-    echo json_encode($flowData->jsonbundler->json);
+    echo json_encode($FlowData->jsonbundler->json);
 
     return;
-
 }
 
-// Generate the HTML for the form that gets a user's starsign 
+// Generate the HTML for the form that gets a user's starsign
 
 $output = "";
 
@@ -201,25 +193,21 @@ $output .= "<form><label for='dateOfBirth'>Date of birth</label><input type='dat
 // Add the results if they're available
 
 
-if($flowData->astrology->starSign){
-    
-    $output .= "<p>Your starsign is " . $flowData->astrology->starSign . "</p>";
-
+if ($FlowData->astrology->starSign) {
+    $output .= "<p>Your starsign is " . $FlowData->astrology->starSign . "</p>";
 }
 
 $output .= "<div id='hemispheretext'>";
 
-if($flowData->astrology->hemisphere){
-
-    $output .= "<p>Look at the " . $flowData->astrology->hemisphere . " hemisphere stars tonight!</p>";
-    
+if ($FlowData->astrology->hemisphere) {
+    $output .= "<p>Look at the " . $FlowData->astrology->hemisphere . " hemisphere stars tonight!</p>";
 }
 
 $output .= "</div>";
 
 $output .= "<script>";
 
-// This function will fire when the JSON data object is updated 
+// This function will fire when the JSON data object is updated
 // with information from the server.
 // The sequence is:
 // 1. Response contains JavaScript property 'getLatitude' that gets executed on the client
@@ -227,7 +215,7 @@ $output .= "<script>";
 // 3. The web server responds with new JSON data that contains the hemisphere based on the location.
 // 4. The JavaScript integrates the new JSON data and fires the onChange callback below.
 
-$output .= $flowData->javascriptbuilder->javascript;
+$output .= $FlowData->javascriptbuilder->javascript;
 
 $output .= 'loadHemisphere = function() {
             fod.complete(function (data) {  
