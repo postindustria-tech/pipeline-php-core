@@ -23,7 +23,8 @@
     "license": "EUPL-1.2", 
     "type": "library",
     "require": {
-        "mustache/mustache": "^2.13"
+        "mustache/mustache": "^2.13",
+        "nodejs-php-fallback/uglify": "^1.0"
     },
     "autoload": {
         "classmap": [

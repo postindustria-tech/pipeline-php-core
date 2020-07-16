@@ -70,9 +70,18 @@ class TestEngine extends FlowElement
 
 class TestPipeline
 {
-    public function __construct()
+    public function __construct($minify = NULL)
     {
-        $this->Pipeline = (new PipelineBuilder())
+        if(is_null($minify))
+        {
+            $pipelineSettings = array();
+        }
+        else 
+        {
+            $jsSettings = array('minify'=>$minify);
+            $pipelineSettings = array('javascriptBuilderSettings'=>$jsSettings);
+        }
+        $this->Pipeline = (new PipelineBuilder($pipelineSettings))
         ->add(new TestEngine())
         ->build();
     }
@@ -82,7 +91,7 @@ class JavaScriptBundlerTests extends TestCase
 {
     public function testJSONBundler()
     {
-        $Pipeline = (new TestPipeline())->Pipeline;
+        $Pipeline = (new TestPipeline(false))->Pipeline;
 
         $FlowData = $Pipeline->createFlowData();
 
@@ -106,9 +115,37 @@ class JavaScriptBundlerTests extends TestCase
         $this->assertEquals($FlowData->jsonbundler->json, $expected);
     }
 
+    public function testJavaScriptBuilder_Minify() 
+    {
+        // Generate minified javascript
+        $Pipeline = (new TestPipeline(true))->Pipeline;
+        $FlowData = $Pipeline->createFlowData();
+        $FlowData->process();
+        $minified = $FlowData->javascriptbuilder->javascript;
+
+        // Generate non-minified javascript
+        $Pipeline = (new TestPipeline(false))->Pipeline;
+        $FlowData = $Pipeline->createFlowData();
+        $FlowData->process();
+        $nonminified = $FlowData->javascriptbuilder->javascript;
+
+        // Generate javascript with default settings
+        $Pipeline = (new TestPipeline())->Pipeline;
+        $FlowData = $Pipeline->createFlowData();
+        $FlowData->process();
+        $default = $FlowData->javascriptbuilder->javascript;
+
+        // We don't want to get too specific here. Just check that 
+        // the minified version is smaller to confirm that it's
+        // done something.
+        $this->assertGreaterThan(strlen($minified), strlen($nonminified));
+        // Check that default is to minify the output
+        $this->assertEquals(strlen($default), strlen($minified));
+    }
+
     public function testSequence()
     {
-        $Pipeline = (new TestPipeline())->Pipeline;
+        $Pipeline = (new TestPipeline(false))->Pipeline;
 
         $FlowData = $Pipeline->createFlowData();
 
