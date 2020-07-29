@@ -162,7 +162,11 @@ class JavascriptBuilderElement extends FlowElement
         } else {
             $vars["_supportsPromises"] = false;
         }
-          
+
+        // Check if any delayedproperties exist in the json
+
+        $vars["_hasDelayedProperties"] = strpos($vars["_jsonObject"], "delayexecution") !== false;
+         
         $output = $m->render(file_get_contents(__DIR__ . "/JavaScriptResource.mustache"), $vars);
 
         if($this->minify) {
