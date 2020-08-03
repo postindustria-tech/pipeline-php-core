@@ -27,9 +27,6 @@ use fiftyone\pipeline\core\FlowElement;
 use fiftyone\pipeline\core\PipelineBuilder;
 use fiftyone\pipeline\core\ElementDataDictionary;
 use fiftyone\pipeline\core\AspectPropertyValue;
-use fiftyone\pipeline\core\JsonBundlerElement;
-use fiftyone\pipeline\core\JavascriptBuilderElement;
-use fiftyone\pipeline\core\SequenceElement;
 
 use PHPUnit\Framework\TestCase;
 
@@ -51,7 +48,7 @@ class TestEngine extends FlowElement
             "type" => "boolean"
         )
     );
-    
+
     public function processInternal($FlowData)
     {
         $contents = [];
@@ -70,11 +67,107 @@ class TestEngine extends FlowElement
 
 class TestPipeline
 {
-    public function __construct()
+    public function __construct($minify = NULL)
     {
-        $this->Pipeline = (new PipelineBuilder())
-        ->add(new TestEngine())
-        ->build();
+        if (is_null($minify)) {
+            $pipelineSettings = array();
+        } else {
+            $jsSettings = array('minify' => $minify);
+            $pipelineSettings = array('javascriptBuilderSettings' => $jsSettings);
+        }
+        $this->Pipeline = (new PipelineBuilder($pipelineSettings))
+            ->add(new TestEngine())
+            ->build();
+    }
+}
+
+class DelayedExecutionEngine1 extends FlowElement
+{
+
+    public $dataKey = "delayedexecutiontest1";
+
+    public $properties = [
+        "one" => [
+            "delayexecution" => false,
+            "type" => 'javascript'
+        ],
+        "two" => [
+            "evidenceproperties" => ['jsontestengine']
+        ]
+    ];
+
+    public function processInternal($flowData)
+    {
+
+        $contents = [
+            "one" => 1,
+            "two" => 2
+        ];
+
+        $data = new ElementDataDictionary($this, $contents);
+
+        $flowData->setElementData($data);
+    }
+}
+
+class DelayedExecutionEngine2 extends FlowElement
+{
+
+    public $dataKey = "delayedexecutiontest2";
+
+    public $properties = [
+        "one" => [
+            "delayexecution" => true,
+            "type" => 'javascript'
+        ],
+        "two" => [
+            "evidenceproperties" => ['one']
+        ]
+    ];
+
+    public function processInternal($flowData)
+    {
+
+        $contents = [
+            "one" => 1,
+            "two" => 2
+        ];
+
+        $data = new ElementDataDictionary($this, $contents);
+
+        $flowData->setElementData($data);
+    }
+}
+
+class DelayedExecutionEngine3 extends FlowElement
+{
+
+    public $dataKey = "delayedexecutiontest3";
+
+    public $properties = [
+        "one" => [
+            "evidenceproperties" => ['two', 'three']
+        ],
+        "two" => [
+            "delayexecution" => true
+        ],
+        "three" => [
+            "delayexecution" => false
+        ]
+    ];
+
+    public function processInternal($flowData)
+    {
+
+        $contents = [
+            "one" => 1,
+            "two" => 2,
+            "three" => 3
+        ];
+
+        $data = new ElementDataDictionary($this, $contents);
+
+        $flowData->setElementData($data);
     }
 }
 
@@ -82,7 +175,7 @@ class JavaScriptBundlerTests extends TestCase
 {
     public function testJSONBundler()
     {
-        $Pipeline = (new TestPipeline())->Pipeline;
+        $Pipeline = (new TestPipeline(false))->Pipeline;
 
         $FlowData = $Pipeline->createFlowData();
 
@@ -91,24 +184,52 @@ class JavaScriptBundlerTests extends TestCase
         $expected = array(
             'javascriptProperties' =>
             array(
-              0 => 'test.javascript',
+                0 => 'test.javascript',
             ),
             'test' =>
             array(
-              'javascript' => 'console.log(\'hello world\')',
-              'apvgood' => 'Value',
-              'apvbad' => null,
-              'apvbadnullreason' => 'No value',
-              'normal' => true,
+                'javascript' => 'console.log(\'hello world\')',
+                'apvgood' => 'Value',
+                'apvbad' => null,
+                'apvbadnullreason' => 'No value',
+                'normal' => true,
             )
         );
 
         $this->assertEquals($FlowData->jsonbundler->json, $expected);
     }
 
+    public function testJavaScriptBuilder_Minify()
+    {
+        // Generate minified javascript
+        $Pipeline = (new TestPipeline(true))->Pipeline;
+        $FlowData = $Pipeline->createFlowData();
+        $FlowData->process();
+        $minified = $FlowData->javascriptbuilder->javascript;
+
+        // Generate non-minified javascript
+        $Pipeline = (new TestPipeline(false))->Pipeline;
+        $FlowData = $Pipeline->createFlowData();
+        $FlowData->process();
+        $nonminified = $FlowData->javascriptbuilder->javascript;
+
+        // Generate javascript with default settings
+        $Pipeline = (new TestPipeline())->Pipeline;
+        $FlowData = $Pipeline->createFlowData();
+        $FlowData->process();
+        $default = $FlowData->javascriptbuilder->javascript;
+
+        // We don't want to get too specific here. Just check that 
+        // the minified version is smaller to confirm that it's
+        // done something.
+        $this->assertGreaterThan(strlen($minified), strlen($nonminified));
+        // Check that default is to minify the output
+        $this->assertEquals(strlen($default), strlen($minified));
+    }
+
     public function testSequence()
     {
-        $Pipeline = (new TestPipeline())->Pipeline;
+        $Pipeline = (new TestPipeline(false))->Pipeline;
 
         $FlowData = $Pipeline->createFlowData();
 
@@ -120,5 +241,71 @@ class JavaScriptBundlerTests extends TestCase
         $this->assertEquals($FlowData->evidence->get("query.sequence"), 11);
 
         $this->assertEquals(count($FlowData->jsonbundler->json["javascriptProperties"]), 0);
+    }
+
+    public function test_jsonbundler_when_delayed_execution_false()
+    {
+
+        $pipeline = new PipelineBuilder();
+
+        $pipeline->add(new DelayedExecutionEngine1());
+        $pipeline = $pipeline->build();
+
+        $flowData = $pipeline->createFlowData();
+
+        $flowData->process();
+
+        $expected = json_encode(["one" => 1, "two" => 2]);
+        $actual = json_encode($flowData->jsonbundler->json["delayedexecutiontest1"]);
+        $this->assertEquals($actual, $expected);
+
+    }
+
+    public function test_jsonbundler_when_delayed_execution_true()
+    {
+
+        $pipeline = new PipelineBuilder();
+
+        $pipeline->add(new DelayedExecutionEngine2());
+        $pipeline = $pipeline->build();
+
+        $flowData = $pipeline->createFlowData();
+
+        $flowData->process();
+
+        $expected = json_encode([
+            "onedelayexecution" => true,
+            "one" => 1,
+            "twoevidenceproperties" => ['delayedexecutiontest2.one'],
+            "two" => 2
+        ]);
+
+        $actual = json_encode($flowData->jsonbundler->json["delayedexecutiontest2"]);
+        $this->assertEquals($actual, $expected);
+    }
+
+
+    public function test_jsonbundler_when_delayed_execution_multiple()
+    {
+
+        $pipeline = new PipelineBuilder();
+
+        $pipeline->add(new DelayedExecutionEngine3());
+        $pipeline = $pipeline->build();
+
+        $flowData = $pipeline->createFlowData();
+
+        $flowData->process();
+
+        $expected = json_encode([
+            "oneevidenceproperties" => ['delayedexecutiontest3.two'],
+            "one" => 1,
+            "twodelayexecution" => true,
+            "two" => 2,
+            "three" => 3
+        ]);
+
+        $actual = json_encode($flowData->jsonbundler->json["delayedexecutiontest3"]);
+        $this->assertEquals($actual, $expected);
     }
 }

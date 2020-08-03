@@ -34,11 +34,12 @@ namespace fiftyone\pipeline\core;
 class JsonBundlerElement extends FlowElement
 {
     public $dataKey = "jsonbundler";
+    private $propertyCache = [];
 
     /**
      * The JSONBundler extracts all properties from a FlowData and serializes them into JSON
      * @param FlowData FlowData
-    */
+     */
     public function processInternal($flowData)
     {
         // Get every property on every FlowElement
@@ -48,28 +49,90 @@ class JsonBundlerElement extends FlowElement
             "javascriptProperties" => []
         ];
 
+        if (count($this->propertyCache)) {
+            $propertyCacheSet = true;
+        } else {
+            $propertyCacheSet = false;
+            $this->propertyCache = [];
+        }
+
+
         foreach ($flowData->pipeline->flowElements as $flowElement) {
             if ($flowElement->dataKey === "jsonbundler" || $flowElement->dataKey === "sequence" || $flowElement->dataKey === "javascriptbuilder") {
                 continue;
             }
 
+            $properties = $flowElement->getProperties();
+
+            if (!$propertyCacheSet) {
+
+                $delayExecutionList = [];
+                $delayedEvidenceProperties = [];
+
+                // Loop over all properties and see if any have delay execution set to true
+
+                foreach ($properties as $propertyKey => $propertyMeta) {
+
+                    if (isset($propertyMeta["delayexecution"]) && $propertyMeta["delayexecution"]) {
+                        $delayExecutionList[] = $propertyKey;
+                    }
+                }
+
+                // Loop over all properties again and see if any have evidenceproperties which
+                // have delayedExecution set to true
+
+                foreach ($properties as $propertyKey => $propertyMeta) {
+
+                    if (isset($propertyMeta["evidenceproperties"])) {
+
+                        $delayedEvidencePropertiesList = array_filter($propertyMeta["evidenceproperties"], function ($evidenceProperty) use ($delayExecutionList) {
+                            return in_array($evidenceProperty, $delayExecutionList);
+                        });
+
+                        if (count($delayedEvidencePropertiesList)) {
+                            $delayedEvidenceProperties[$propertyKey] = array_map(function ($property) use ($flowElement) {
+                                return $flowElement->dataKey . '.' . $property;
+                            }, $delayedEvidencePropertiesList);
+                        }
+                    }
+                }
+
+                $this->propertyCache[$flowElement->dataKey] = [
+                    "delayExecutionList" => $delayExecutionList,
+                    "evidenceProperties" => $delayedEvidenceProperties
+                ];
+            }
+
+            $propertyCache = $this->propertyCache[$flowElement->dataKey];
+
             // Create empty area for FlowElement properties to go
             $output[$flowElement->dataKey] = [];
-
-            $properties = $flowElement->getProperties();
 
             foreach ($properties as $propertyKey => $property) {
                 $value = null;
                 $nullReason = "Unknown";
 
+                // Check if property has delayed execution and set in JSON if yes
+
+                if (in_array($propertyKey, $propertyCache["delayExecutionList"])) {
+                    $output[$flowElement->dataKey][strtolower($propertyKey) . "delayexecution"] = true;
+                }
+
+                // // Check if property has any delayed execution evidence properties and set in JSON if yes
+
+                if (isset($propertyCache["evidenceProperties"][$propertyKey])) {
+                    $output[$flowElement->dataKey][strtolower($propertyKey) . 'evidenceproperties'] = $propertyCache["evidenceProperties"][$propertyKey];
+                }
+
                 try {
+
                     $valueContainer = $flowData->get($flowElement->dataKey)->get($propertyKey);
-                
+
                     // Check if value is of the aspect property value type
-      
+
                     if (is_object($valueContainer) && property_exists($valueContainer, "hasValue")) {
                         // Check if it has a value
-      
+
                         if ($valueContainer->hasValue) {
                             $value = $valueContainer->value;
                         } else {
@@ -77,33 +140,32 @@ class JsonBundlerElement extends FlowElement
                             $nullReason = $valueContainer->noValueMessage;
                         }
                     } else {
-                    // Standard value
-      
+                        // Standard value
+
                         $value = $valueContainer;
                     }
                 } catch (\Exception $e) {
-                // Catching missing property exceptions and other errors
-      
+                    // Catching missing property exceptions and other errors
+
                     continue;
                 }
-      
+
                 $output[strtolower($flowElement->dataKey)][strtolower($propertyKey)] = $value;
                 if ($value == null) {
                     $output[strtolower($flowElement->dataKey)][strtolower($propertyKey) . "nullreason"] = $nullReason;
                 }
-    
+
                 $sequence = $flowData->evidence->get("query.sequence");
 
                 if (!$sequence || $sequence < 10) {
-                // Cloud properties come back as capitalized
+                    // Cloud properties come back as capitalized
                     // TODO change this, but for now
 
                     if (isset($property["Type"])) {
                         $property["type"] = $property["Type"];
                     }
-      
-                    if (isset($property["type"]) && strtolower($property["type"]) === "javascript"
-                    ) {
+
+                    if (isset($property["type"]) && strtolower($property["type"]) === "javascript") {
                         $output["javascriptProperties"][] = strtolower($flowElement->dataKey) . "." . strtolower($propertyKey);
                     }
                 }
