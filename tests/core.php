@@ -89,8 +89,15 @@ class CoreTests extends TestCase
     // Test check stop FlowData works
     public function testStopFlowData()
     {
+        $getValue = null;
         $testPipeline = new TestPipeline();
-        $getValue = $testPipeline->flowData->get("example2");
+        try {
+            $getValue = $testPipeline->flowData->get("example2");
+            $this->fail();
+        }
+        catch (\Exception $e) {
+            // An exception should be thrown.
+        }
         $this->assertTrue($getValue === null);
     }
 

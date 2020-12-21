@@ -23,6 +23,7 @@
 
 namespace fiftyone\pipeline\core;
 
+use fiftyone\pipeline\core\Messages;
 /**
   * FlowData is created by a specific Pipeline
   * It collects evidence set by the user
@@ -78,7 +79,7 @@ class FlowData
             $this->processed = true;
             return $this;
         } else {
-            $this->setError("global", "FlowData already processed");
+            $this->setError("global", Messages::FLOW_DATA_PROCESSED);
         }
     }
 
@@ -89,11 +90,7 @@ class FlowData
     */
     public function getFromElement($flowElement)
     {
-        if (isset($this->data[$flowElement->dataKey])) {
-            return $this->data[$flowElement->dataKey];
-        } else {
-            return null;
-        }
+        return $this->get($flowElement->dataKey);
     }
 
     /**
@@ -107,7 +104,10 @@ class FlowData
         if (isset($this->data[$flowElementKey])) {
             return $this->data[$flowElementKey];
         } else {
-            return null;
+            throw new \Exception(
+                sprintf(Messages::NO_ELEMENT_DATA,
+                    $flowElementKey,
+                        join(",", array_keys($this->data))));
         }
     }
 
@@ -118,11 +118,7 @@ class FlowData
     */
     public function __get($flowElementKey)
     {
-        if (isset($this->data[$flowElementKey])) {
-            return $this->data[$flowElementKey];
-        } else {
-            return null;
-        }
+        return $this->get($flowElementKey);
     }
 
     /**
@@ -201,15 +197,18 @@ class FlowData
 
         if (isset($keys)) {
             foreach ($keys as $key => $flowElement) {
-            // First check if FlowElement has any data set
 
-                $data = $this->get($flowElement);
+                // First check if FlowElement has any data set
 
-                if ($data) {
-                    try {
-                        $output[$key] = $data->get($key);
-                    } catch (\Exception $e) {
-                        continue;
+                if (isset($this->data[$flowElement])) {
+                    $data = $this->get($flowElement);
+
+                    if ($data) {
+                        try {
+                            $output[$key] = $data->get($key);
+                        } catch (\Exception $e) {
+                            continue;
+                        }
                     }
                 }
             }
