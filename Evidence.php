@@ -23,6 +23,8 @@
 
 namespace fiftyone\pipeline\core;
 
+use fiftyone\pipeline\core\Messages;
+
 /**
   * Storage of evidence on a FlowData object
 */
@@ -67,7 +69,7 @@ class Evidence
     public function setArray($array)
     {
         if (!is_array($array)) {
-            $this->flowData->setError("core", "Must pass key and value");
+            $this->flowData->setError("core", Messages::PASS_KEY_VALUE);
         }
 
         foreach ($array as $key => $value) {

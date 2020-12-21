@@ -37,6 +37,7 @@
             "FlowData.php",
             "FlowElement.php",
             "Logger.php",
+            "Messages.php",
             "Pipeline.php",
             "PipelineBuilder.php",
             "JavascriptBuilder.php",
