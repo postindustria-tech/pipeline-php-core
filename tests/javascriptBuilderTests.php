@@ -193,7 +193,8 @@ class JavaScriptBundlerTests extends TestCase
                 'apvbad' => null,
                 'apvbadnullreason' => 'No value',
                 'normal' => true,
-            )
+            ),
+            'set-headers' => Array ()
         );
 
         $this->assertEquals($FlowData->jsonbundler->json, $expected);

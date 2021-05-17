@@ -42,7 +42,10 @@
             "PipelineBuilder.php",
             "JavascriptBuilder.php",
             "JsonBundler.php",
-            "SequenceElement.php"
+            "SequenceElement.php",
+			"SetHeaderElement.php",
+			"Constants.php",
+			"Utils.php"
         ]
     }
 }

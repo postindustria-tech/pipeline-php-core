@@ -32,8 +32,35 @@ class Messages {
     /**
      * Error message thrown when there is no matching element in the FlowData.
      */
-    public const NO_ELEMENT_DATA = "There is no element data for '%s' against "
+    const NO_ELEMENT_DATA = "There is no element data for '%s' against "
         . "this flow data. Available element data keys are: '%s'";
-	public const PASS_KEY_VALUE = "Must pass key and value";
-	public const FLOW_DATA_PROCESSED = "FlowData already processed";
+	const PASS_KEY_VALUE = "Must pass key and value";
+	const FLOW_DATA_PROCESSED = "FlowData already processed";
+
+    /**
+     * Property does not start with SetHeader. This takes the name of a property
+     * as a format argument.
+     */
+    const PROPERTY_NOT_SET_HEADER = "Property Name '%s' does not start with 'SetHeader'.";
+    
+    /**
+     * Property Name is not in the valid format. This takes the property name 
+     * as format argument.
+     */
+    const WRONG_PROPERTY_FORMAT = 
+        "Property Name '%s' is not in the expected format i.e. SetHeader[Component][HeaderName]. ";
+
+    /**
+     * Element not found in flowData. This takes the element datakey 
+     * as format argument.
+     */
+    const ELEMENT_NOT_FOUND = 
+        "Element '%s' is not present in the FlowData. ";
+
+    /**
+     * Property not found in flowData. This takes the element datakey
+     * and property names as format arguments.
+     */ 
+    const PROPERTY_NOT_FOUND = 
+        "Property '%s' is not present in the FlowData against '%s' ElementData. ";
 }
