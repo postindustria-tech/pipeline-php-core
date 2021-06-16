@@ -45,6 +45,12 @@ class PipelineBuilder
         if (isset($settings["javascriptBuilderSettings"])) {
             $this->javascriptBuilderSettings = $settings["javascriptBuilderSettings"];
         }
+
+        if (isset($settings["useSetHeaderProperties"])) {
+            $this->useSetHeaderProperties = $settings["useSetHeaderProperties"];
+        } else {
+            $this->useSetHeaderProperties = true;
+        }
     }
 
     private function getJavaScriptElements()
@@ -62,6 +68,19 @@ class PipelineBuilder
             } else {
                 $flowElements[] = new JavascriptBuilderElement([]);
             }
+        }
+   
+        return $flowElements;
+    }
+
+    private function getSetHeaderElements()
+    {
+        $flowElements = [];
+    
+        if ($this->useSetHeaderProperties) {
+            
+            // Add SetHeader elements   
+            $flowElements[] = new SetHeaderElement();   
         }
    
         return $flowElements;
@@ -90,7 +109,9 @@ class PipelineBuilder
     */
     public function build()
     {
-        $this->flowElements = array_merge($this->flowElements, $this->getJavaScriptElements());
+        $this->flowElements = array_merge($this->flowElements, 
+                                        $this->getJavaScriptElements(), 
+                                        $this->getSetHeaderElements());
 
         return new Pipeline($this->flowElements, $this->settings);
     }

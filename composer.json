@@ -42,7 +42,13 @@
             "PipelineBuilder.php",
             "JavascriptBuilder.php",
             "JsonBundler.php",
-            "SequenceElement.php"
+            "SequenceElement.php",
+			"SetHeaderElement.php",
+			"Constants.php",
+			"Utils.php"
         ]
+    },
+    "require-dev": {
+        "kint-php/kint": "^3.3"
     }
 }
