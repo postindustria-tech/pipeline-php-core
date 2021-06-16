@@ -1,0 +1,10 @@
+trigger: none
+
+# Include shared variables
+variables:
+- template: shared-variables.yml
+
+stages:
+- template: shared-build-and-test-stage.yml
+  parameters:
+    imageName: $(linuxImage)
