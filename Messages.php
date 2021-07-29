@@ -34,6 +34,8 @@ class Messages {
      */
     const NO_ELEMENT_DATA = "There is no element data for '%s' against "
         . "this flow data. Available element data keys are: '%s'";
+    const NO_ELEMENT_DATA_NULL = "There is no element data for '%s' against "
+        . "this flow data.'";
 	const PASS_KEY_VALUE = "Must pass key and value";
 	const FLOW_DATA_PROCESSED = "FlowData already processed";
 

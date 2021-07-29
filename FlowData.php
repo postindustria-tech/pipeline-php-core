@@ -100,14 +100,19 @@ class FlowData
      *
     */
     public function get($flowElementKey)
-    {
+    {   
         if (isset($this->data[$flowElementKey])) {
             return $this->data[$flowElementKey];
         } else {
+			if(is_null($this->data)){
+            throw new \Exception(
+                sprintf(Messages::NO_ELEMENT_DATA_NULL, $flowElementKey));
+	        } else {
             throw new \Exception(
                 sprintf(Messages::NO_ELEMENT_DATA,
                     $flowElementKey,
                         join(",", array_keys($this->data))));
+			}
         }
     }
 
