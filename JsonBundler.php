@@ -58,7 +58,7 @@ class JsonBundlerElement extends FlowElement
 
 
         foreach ($flowData->pipeline->flowElements as $flowElement) {
-            if ($flowElement->dataKey === "jsonbundler" || $flowElement->dataKey === "sequence" || $flowElement->dataKey === "javascriptbuilder") {
+            if ($flowElement->dataKey === "jsonbundler" || $flowElement->dataKey === "sequence" || $flowElement->dataKey === "javascriptbuilder" || $flowElement->dataKey === "set-headers") {
                 continue;
             }
 
