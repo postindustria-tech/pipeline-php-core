@@ -101,6 +101,18 @@ class CoreTests extends TestCase
         $this->assertTrue($getValue === null);
     }
 
+    // Test exception is thrown when not suppressed.
+    public function testErrors_DontSuppressException() {
+
+        try {
+            $testPipeline = new TestPipeline(false);
+            $this->fail("Exception is expected.");
+        }
+        catch (\Exception $e) {
+            $this->assertTrue(!empty($e->getMessage()));
+        }
+    }
+
     // Test errors are returned
     public function testErrors()
     {
@@ -109,12 +121,32 @@ class CoreTests extends TestCase
         $this->assertTrue(isset($getValue));
     }
 
+    // Test Already Processed FlowData.
+    public function testErrors_AlreadyProcessed() {
+
+            $logger = new MemoryLogger("info");
+            $flowElement1 = new ExampleFlowElement1();
+            $pipeline = (new PipelineBuilder())
+                ->add($flowElement1)
+                ->addLogger($logger)
+                ->build();
+            $flowData = $pipeline->createFlowData();
+            $flowData->process();
+        try {
+            $flowData->process();
+            $this->fail("Exception is expected.");
+        }
+        catch (\Exception $e) {
+            $this->assertEquals($e->getMessage(), "FlowData already processed");
+        }
+    }
+        
     // Test if adding properties at a later stage works (for cloud FlowElements for example)
     public function testUpdateProperties()
     {
         $flowElement1 = new ExampleFlowElement1();
         $logger = new MemoryLogger("info");
-        $pipeline = (new PipelineBuilder())->add($flowElement1)->add(new ErrorFlowData())
+        $pipeline = (new PipelineBuilder())->add($flowElement1)
         ->add(new StopFlowData())
         ->add(new ExampleFlowElement2())
         ->addLogger($logger)
