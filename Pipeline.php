@@ -49,6 +49,16 @@ class Pipeline
             $this->logger = $settings["logger"];
         }
 
+        /* If true then pipeline will suppress exceptions 
+        added to FlowData errors otherwise will throw the
+        exception occurred during the processing of first
+        element.*/
+        if (!isset($settings["suppressProcessExceptions"])) {
+            $this->suppressProcessExceptions = false;
+        } else {
+            $this->suppressProcessExceptions = $settings["suppressProcessExceptions"];
+        }
+
         $this->log("info", "test");
 
         $this->flowElements = $flowElements;

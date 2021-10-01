@@ -77,10 +77,17 @@ class FlowData
             // Set processed flag to true. FlowData can only be processed once
 
             $this->processed = true;
-            return $this;
+            
         } else {
-            $this->setError("global", Messages::FLOW_DATA_PROCESSED);
+            $this->setError("global", new \Exception(Messages::FLOW_DATA_PROCESSED));
         }
+
+        if (count($this->errors) != 0 && $this->pipeline->suppressProcessExceptions === false) {
+            $exception = reset($this->errors);
+            throw $exception;
+        }
+
+        return $this;
     }
 
     /**
@@ -138,17 +145,20 @@ class FlowData
     /**
      * Set error (should be keyed by FlowElement dataKey)
      * @param string key
-     * @param string error message
+     * @param Exception error
     */
     public function setError($key, $error)
     {
-        if (!isset($this->errors[$key])) {
-            $this->errors[$key] = array();
+        $this->errors[$key] = $error;
+
+        $logMessage = "Error occurred during processing";
+
+        if (!empty($key)) {
+            $logMessage = $logMessage . " of " . $key . ". \n" . $error;
         }
+                        
+        $this->pipeline->log("error", $logMessage);
 
-        $this->pipeline->log("error", $error);
-
-        $this->errors[$key][] = $error;
     }
 
     /**

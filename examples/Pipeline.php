@@ -42,9 +42,6 @@ require(__DIR__ . "/FlowElementsForExamples.php");
 $fe1 = new exampleFlowElementA();
 $fe2 = new exampleFlowElementB();
 
-// A FlowElement that causes an error
-$feError = new errorFlowElement();
-
 // A FlowElement that stops processing (and prevents and subsequent elements in the Pipeline from processing)
 
 $feStop = new stopFlowElement();
@@ -67,7 +64,6 @@ class ArrayLogger extends Logger
 
 $Pipeline = (new PipelineBuilder())
             ->add($fe1)
-            ->add($feError)
             ->add($feStop)
             ->add($fe2)
             ->addLogger(new ArrayLogger("info"))

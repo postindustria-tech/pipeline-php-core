@@ -23,8 +23,6 @@
 
 namespace fiftyone\pipeline\core;
 
-use NodejsPhpFallback\Uglify;
-
 /**
  * The JavaScriptBuilder aggregates JavaScript properties
  * from FlowElements in the Pipeline. This JavaScript also (when needed)
@@ -169,10 +167,9 @@ class JavascriptBuilderElement extends FlowElement
          
         $output = $m->render(file_get_contents(__DIR__ . "/JavaScriptResource.mustache"), $vars);
 
-        if($this->minify) {
+		if($this->minify) {
             // Minify the output
-            $uglify = new Uglify(array($output)); 
-            $output = $uglify->getMinifiedJs();
+            $output = \JShrink\Minifier::minify($output);
         }
         
         $data = new ElementDataDictionary($this, ["javascript" => $output]);
