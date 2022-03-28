@@ -52,7 +52,7 @@ class BasicListEvidenceKeyFilter extends EvidenceKeyFilter
         $keep = false;
 
         foreach ($this->list as $evidenceKey) {
-            if ($key === $evidenceKey) {
+            if (strtolower($key) === strtolower($evidenceKey)) {
                 $keep = true;
             }
         }
