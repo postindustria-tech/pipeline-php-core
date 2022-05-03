@@ -141,12 +141,20 @@ class PipelineBuilder
     *   }
     *  }]
     * }`
-    * @param string file name
+    * @param string file name of the file to load config, or alternatively
+    * pass a config object already read from file
     */
-    public function buildFromConfig($file)
+    public function buildFromConfig($fileOrConfig)
     {
-        $config = json_decode(file_get_contents($file), true);
-        
+        if (is_string($fileOrConfig))
+        {
+            $config = json_decode(file_get_contents($fileOrConfig), true);
+        }
+        else
+        {
+            $config = $fileOrConfig;
+        }
+
         foreach ($config["PipelineOptions"]["Elements"] as $element) {
             $builder = $element["BuilderName"];
 

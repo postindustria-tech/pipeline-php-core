@@ -59,4 +59,13 @@ class BasicListEvidenceKeyFilter extends EvidenceKeyFilter
 
         return $keep;
     }
+
+    /**
+     * Get the internal list of evidence keys in this filter.
+     * @return mixed[] evidence keys
+     */
+    public function getList()
+    {
+        return $this->list;
+    }
 }
