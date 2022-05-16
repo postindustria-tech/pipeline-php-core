@@ -20,10 +20,18 @@ composer install
 This will create the vendor directory containing autoload.php. Now navigate to the examples directory and start a PHP server with the relevant file. For example:
 
 ```
-PHP -S localhost:3000 customFlowElement.php
+PHP -S localhost:3000 CustomFlowElement.php
 ```
 
 This will start a local web server listening on port 3000. Open your web browser and browse to http://localhost:3000/ to see the example in action.
+
+The table below describes the examples available in this repository:
+
+| Example                                | Description |
+|----------------------------------------|-------------|
+| Pipeline                               | Demonstrates adding some sample flow elements to a pipeline and processing some data with them. |
+| CustomFlowElement                      | Demonstrates how to write your own flow element, which can then be added to a pipeline to perform processing. |
+
 
 ## Tests
 To run the tests in this repository, make sure PHPUnit is installed then, in the root of this repo, call:
