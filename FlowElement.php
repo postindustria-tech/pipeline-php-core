@@ -32,6 +32,8 @@ namespace fiftyone\pipeline\core;
 **/
 class FlowElement
 {
+    public $pipelines;
+
     public function __construct()
     {
 

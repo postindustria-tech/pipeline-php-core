@@ -32,6 +32,7 @@ namespace fiftyone\pipeline\core;
 */
 class EvidenceKeyFilter
 {
+    public $filterEvidenceKey;
 
     /**
     * filterevidence from an object

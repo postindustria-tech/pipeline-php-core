@@ -32,6 +32,8 @@ class Logger
     
     private $levels = ["trace", "debug", "information", "warning", "error", "critical"];
 
+    public $settings;
+
     /**
      * Create a logger
      * @param string level ("trace", "debug", "information", "warning", "error", "critical")
