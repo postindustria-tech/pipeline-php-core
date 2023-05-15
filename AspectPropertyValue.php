@@ -66,7 +66,9 @@ class AspectPropertyValue
             if ($this->hasValue) {
                 return $this->value;
             } else {
-                throw new \Exception($this->noValueMessage ?? '');
+                throw new \Exception(
+                    empty($this->noValueMessage) ? '' : $this->noValueMessage
+                );
             }
         }
     }
