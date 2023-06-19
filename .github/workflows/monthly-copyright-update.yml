@@ -1,4 +1,4 @@
-name: Nightly PRs to Main
+name: Monthly Copyright Update
 
 on:
   workflow_dispatch:
@@ -7,11 +7,11 @@ on:
         default: 'true'
         description: Dry Run
     # schedule:
-    #   - cron: '0 1 * * *'
+    #   - cron: '0 1 1 * *'
 
 jobs:
-  Nightly_PRs_to_Main:
-    uses: postindustria-tech/common-ci/.github/workflows/nightly-prs-to-main.yml@main
+  Monthly_Copyright_Update:
+    uses: postindustria-tech/common-ci/.github/workflows/monthly-copyright-update.yml@main
     with:
       repo-name: ${{ github.event.repository.name }}
       org-name: ${{ github.event.repository.owner.login }}
