@@ -31,7 +31,9 @@ class ExampleTests extends TestCase
 {
     public function testCustomFlowElementExample()
     {
+        ob_start(); // hide output
         include __DIR__ . "/../examples/CustomFlowElement.php";
+        ob_end_clean(); // discard output
 
         $this->assertTrue(strpos($output, "Starsign") !== false);
     }

@@ -36,7 +36,7 @@ use PHPUnit\Framework\TestCase;
 class SetHeaderTests extends TestCase
 {  
     // Data Provider for testGetResponseHeaderValue
-	public function provider_testGetResponseHeaderValue()
+	public static function provider_testGetResponseHeaderValue()
     {
         return array(
         array(array("device" => (object) array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN), "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN))), ""),
@@ -75,7 +75,7 @@ class SetHeaderTests extends TestCase
     }
 
     // Data Provider for testGetResponseHeaderValue
-	public function provider_testGetResponseHeaderName_Valid()
+	public static function provider_testGetResponseHeaderName_Valid()
     {
         return array(
         array("SetHeaderBrowserAccept-CH", "Accept-CH"),
@@ -96,7 +96,7 @@ class SetHeaderTests extends TestCase
     }
 
     // Data Provider for testGetResponseHeaderValue
-	public function provider_testGetResponseHeaderName_InValid()
+	public static function provider_testGetResponseHeaderName_InValid()
     {
         return array(
         array("TestBrowserAccept-CH", Messages::PROPERTY_NOT_SET_HEADER),
