@@ -43,7 +43,8 @@ class Evidence
     }
 
     /**
-        * Set a single piece of evidence by its element and value
+        * If a flow element can use the key then add the key value pair to the
+        * evidence collection
         * @param string key
         * @param mixed value
     */
@@ -54,6 +55,7 @@ class Evidence
         foreach ($this->flowData->pipeline->flowElements as $flowElement) {
             if ($flowElement->filterEvidenceKey($key)) {
                 $keep = true;
+                break;
             }
         }
 
