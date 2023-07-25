@@ -42,7 +42,7 @@ class PipelineBuilder
         $this->pipelines = [];
 
         if (isset($settings["addJavaScriptBuilder"])) {
-            $this->addJavaScriptBuilder = $settings["addJavascriptBuilder"];
+            $this->addJavaScriptBuilder = $settings["addJavaScriptBuilder"];
         } else {
             $this->addJavaScriptBuilder = true;
         }

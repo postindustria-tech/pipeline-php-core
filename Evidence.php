@@ -79,9 +79,11 @@ class Evidence
 
     /**
         * Extract evidence from a web request
-        * No argument version automatically reads from current request
-        * @param $_SERVER
-        * @param $_COOKIE
+        * No argument version automatically reads from current request using the
+        * $_SERVER, $_COOKIE, $_GET and $_POST globals
+        * @param $server key value pairs for the HTTP headers
+        * @param $cookies key value pairs for the cookies
+        * @param $query key value pairs for the form parameters
     */
     public function setFromWebRequest($server = null, $cookies = null, $query = null)
     {
@@ -94,7 +96,9 @@ class Evidence
         }
 
         if (!$query) {
-            $query = $_GET;
+            // Merge the GET and POST parameters favoring the GET keys if there
+            // are keys that conflict.
+            $query = array_merge($_POST, $_GET);
         }
 
         $evidence = array();
@@ -105,15 +109,18 @@ class Evidence
   
                 $key = strtolower($key);
   
+                error_log("header." . $key . ": " . $value, 0);
                 $evidence["header." . $key] = $value;
             }
         }
   
         foreach ($cookies as $key => $value) {
+            error_log("cookie." . $key . ": " . $value, 0);
             $evidence["cookie." . $key] = $value;
         }
 
         foreach ($query as $key => $value) {
+            error_log("query." . $key . ": " . $value, 0);
             $evidence["query." . $key] = $value;
         }
   
