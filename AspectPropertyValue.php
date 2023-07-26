@@ -32,9 +32,9 @@ namespace fiftyone\pipeline\core;
 */
 class AspectPropertyValue
 {
-    private $value;
-    private $noValueMessage;
-    public $hasValue;
+    private $_value;
+    public $noValueMessage = null;
+    public $hasValue = false;
 
     /**
     * Constructor for AspectPropertyValue
@@ -64,12 +64,18 @@ class AspectPropertyValue
     {
         if ($key === "value") {
             if ($this->hasValue) {
-                return $this->value;
-            } else {
-                throw new \Exception(
-                    empty($this->noValueMessage) ? '' : $this->noValueMessage
-                );
+                return $this->_value;
+            } else if (!empty($this->noValueMessage)) {
+                throw new \Exception($this->noValueMessage);
             }
+        }
+    }
+
+    public function __set($key, $value)
+    {
+        if ($key === "value") {
+            $this->_value = $value;
+            $this->hasValue = true;
         }
     }
 }

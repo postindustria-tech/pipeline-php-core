@@ -36,7 +36,7 @@ class Pipeline
     public $logger;
     public $metaDataStore;
     public $suppressProcessExceptions;
-    private $propertyDatabase;
+    public $propertyDatabase;
 
     /**
      * Pipeline constructor

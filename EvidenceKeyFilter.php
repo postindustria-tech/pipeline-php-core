@@ -32,7 +32,7 @@ namespace fiftyone\pipeline\core;
 */
 class EvidenceKeyFilter
 {
-    public $filterEvidenceKey;
+    private $_filterEvidenceKey = null;
 
     /**
     * filterevidence from an object
@@ -59,6 +59,17 @@ class EvidenceKeyFilter
     */
     public function filterEvidenceKey($key)
     {
+        if ($this->_filterEvidenceKey) {
+            return call_user_func($this->_filterEvidenceKey, $key);
+        }
+
         return true;
+    }
+
+    public function __set($name, $value)
+    {
+        if ($name === 'filterEvidenceKey') {
+            $this->_filterEvidenceKey = $value;
+        }
     }
 }

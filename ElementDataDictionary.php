@@ -30,7 +30,7 @@ use fiftyone\pipeline\core\ElementData;
 **/
 class ElementDataDictionary extends ElementData
 {
-    private $contents;
+    public $contents;
 
     /**
     * Constructor for element data dictionary

@@ -67,6 +67,8 @@ class TestEngine extends FlowElement
 
 class TestPipeline
 {
+    public $Pipeline;
+
     public function __construct($minify = NULL)
     {
         if (is_null($minify)) {

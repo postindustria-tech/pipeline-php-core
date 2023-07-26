@@ -32,18 +32,11 @@ namespace fiftyone\pipeline\core;
 **/
 class FlowElement
 {
-    public $pipelines;
-
-    public function __construct()
-    {
-
-        // List of Pipelines the FlowElement has been added to
-        $this->pipelines = [];
-    }
-
     public $dataKey;
     public $properties = [];
-    
+    // List of Pipelines the FlowElement has been added to
+    public $pipelines = [];
+
     /**
      * General wrapper function that calls a FlowElement's processInternal method
      * @param FlowData
