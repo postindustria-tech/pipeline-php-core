@@ -4,17 +4,18 @@ on:
   workflow_dispatch:
     inputs:
       dryrun:
-        default: 'true'
+        default: false
+        type: boolean
         description: Dry Run
-    # schedule:
-    #   - cron: '0 1 * * *'
+  schedule:
+    - cron: '0 1 * * *'
 
 jobs:
   Nightly_PRs_to_Main:
-    uses: postindustria-tech/common-ci/.github/workflows/nightly-prs-to-main.yml@main
+    uses: 51Degrees/common-ci/.github/workflows/nightly-prs-to-main.yml@main
     with:
       repo-name: ${{ github.event.repository.name }}
       org-name: ${{ github.event.repository.owner.login }}
-      dryrun: ${{ inputs.dryrun }}
+      dryrun: ${{ inputs.dryrun || false }}
     secrets:
-      token: ${{ secrets.GITHUB_TOKEN }}
+      token: ${{ secrets.ACCESS_TOKEN }}

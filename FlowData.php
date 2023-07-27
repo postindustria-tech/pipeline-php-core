@@ -171,7 +171,7 @@ class FlowData
         $requestedEvidence = array();
         $evidence = $this->evidence->getAll();
 
-        foreach ($this->Pipeline->flowElements as $flowElement) {
+        foreach ($this->pipeline->flowElements as $flowElement) {
             $requestedEvidence = array_merge($requestedEvidence, $flowElement->filterEvidence($this));
         }
 

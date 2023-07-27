@@ -49,15 +49,13 @@ class BasicListEvidenceKeyFilter extends EvidenceKeyFilter
     */
     public function filterEvidenceKey($key)
     {
-        $keep = false;
-
         foreach ($this->list as $evidenceKey) {
             if (strtolower($key) === strtolower($evidenceKey)) {
-                $keep = true;
+                return true;
             }
         }
 
-        return $keep;
+        return false;
     }
 
     /**
