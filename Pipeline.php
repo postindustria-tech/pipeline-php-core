@@ -35,6 +35,8 @@ class Pipeline
     public $flowElementsList = array();
     public $logger;
     public $metaDataStore;
+    public $suppressProcessExceptions;
+    public $propertyDatabase;
 
     /**
      * Pipeline constructor

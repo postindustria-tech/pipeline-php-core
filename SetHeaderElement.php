@@ -152,15 +152,14 @@ class SetHeaderElement extends FlowElement {
 		}
 
 		$propertyKey = strtolower($propertyKey);
-		try {
+		if (isset($elementData->$propertyKey)) {
             $property = $elementData->$propertyKey;
-		}
-        catch (Exception $e) {
+		} else {
 			echo sprintf(Messages::PROPERTY_NOT_FOUND, $propertyKey, $elementKey);
 			return "";
 		}
 
-		if($property->hasValue && !in_array($property->value, ["Unknown", "noValue"])){
+		if($property && $property->hasValue && !in_array($property->value, ["Unknown", "noValue"])){
 			$value = $property->value;
 		}
         else{

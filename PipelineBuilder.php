@@ -30,6 +30,11 @@ namespace fiftyone\pipeline\core;
 */
 class PipelineBuilder
 {
+    public $pipelines;
+    public $addJavaScriptBuilder;
+    public $javascriptBuilderSettings;
+    public $useSetHeaderProperties;
+
     public function __construct($settings = array())
     {
 
