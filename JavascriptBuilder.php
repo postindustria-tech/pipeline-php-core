@@ -36,6 +36,9 @@ namespace fiftyone\pipeline\core;
  */
 class JavascriptBuilderElement extends FlowElement
 {
+    public $settings;
+    public $minify;
+
     public function __construct($settings = array())
     {
         $this->settings = [
