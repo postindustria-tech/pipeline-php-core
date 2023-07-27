@@ -109,9 +109,22 @@ class PipelineBuilder
     */
     public function build()
     {
-        $this->flowElements = array_merge($this->flowElements, 
-                                        $this->getJavaScriptElements(), 
-                                        $this->getSetHeaderElements());
+        $flowElements = array_merge(
+            $this->flowElements,
+            $this->getJavaScriptElements(),
+            $this->getSetHeaderElements()
+        );
+
+        foreach ($flowElements as $i => $element) {
+            if (
+                $element instanceof JavascriptBuilderElement &&
+                empty($element->settings['_endpoint'])
+            ) {
+                unset($flowElements[$i]);
+            }
+        }
+
+        $this->flowElements = $flowElements;
 
         return new Pipeline($this->flowElements, $this->settings);
     }
