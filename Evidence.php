@@ -111,18 +111,15 @@ class Evidence
   
                 $key = strtolower($key);
   
-                error_log("header." . $key . ": " . $value, 0);
                 $evidence["header." . $key] = $value;
             }
         }
   
         foreach ($cookies as $key => $value) {
-            error_log("cookie." . $key . ": " . $value, 0);
             $evidence["cookie." . $key] = $value;
         }
 
         foreach ($query as $key => $value) {
-            error_log("query." . $key . ": " . $value, 0);
             $evidence["query." . $key] = $value;
         }
   
@@ -152,7 +149,6 @@ class Evidence
           
         $this->setArray($evidence);
     }
-
 
     /**
         * Get a piece of evidence by key
