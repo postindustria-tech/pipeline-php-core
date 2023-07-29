@@ -43,7 +43,8 @@ class Evidence
     }
 
     /**
-        * Set a single piece of evidence by its element and value
+        * If a flow element can use the key then add the key value pair to the
+        * evidence collection
         * @param string key
         * @param mixed value
     */
@@ -54,6 +55,7 @@ class Evidence
         foreach ($this->flowData->pipeline->flowElements as $flowElement) {
             if ($flowElement->filterEvidenceKey($key)) {
                 $keep = true;
+                break;
             }
         }
 
@@ -109,18 +111,15 @@ class Evidence
   
                 $key = strtolower($key);
   
-                error_log("header." . $key . ": " . $value, 0);
                 $evidence["header." . $key] = $value;
             }
         }
   
         foreach ($cookies as $key => $value) {
-            error_log("cookie." . $key . ": " . $value, 0);
             $evidence["cookie." . $key] = $value;
         }
 
         foreach ($query as $key => $value) {
-            error_log("query." . $key . ": " . $value, 0);
             $evidence["query." . $key] = $value;
         }
   
@@ -150,7 +149,6 @@ class Evidence
           
         $this->setArray($evidence);
     }
-
 
     /**
         * Get a piece of evidence by key
