@@ -122,4 +122,17 @@ class FlowElement
             $pipeline->updatePropertyDatabaseForFlowElement($this);
         }
     }
+
+    /**
+     * A default dummy constructor is needed for there are classes inheriting this 
+     * class deeper than 1-level of inheritance and calling parent::__construct() in their
+     * explicit constructors unfortunately intermediates do not define their own __construct()
+     * so the call propagates up to the base class FlowElement and fails.  
+     * Intermediates might define their own __construct() at some point, so we do not want
+     * remove parent::__construct() calls, rather add this one as a catch all.
+     * 
+     * */
+    public function __construct() {
+
+    }
 }
