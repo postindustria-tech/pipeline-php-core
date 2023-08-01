@@ -43,7 +43,8 @@ class Evidence
     }
 
     /**
-        * Set a single piece of evidence by its element and value
+        * If a flow element can use the key then add the key value pair to the
+        * evidence collection
         * @param string key
         * @param mixed value
     */
@@ -54,6 +55,7 @@ class Evidence
         foreach ($this->flowData->pipeline->flowElements as $flowElement) {
             if ($flowElement->filterEvidenceKey($key)) {
                 $keep = true;
+                break;
             }
         }
 
@@ -87,15 +89,15 @@ class Evidence
     */
     public function setFromWebRequest($server = null, $cookies = null, $query = null)
     {
-        if (!$server) {
+        if ($server === null) {
             $server = $_SERVER;
         }
 
-        if (!$cookies) {
+        if ($cookies === null) {
             $cookies = $_COOKIE;
         }
 
-        if (!$query) {
+        if ($query === null) {
             // Merge the GET and POST parameters favoring the GET keys if there
             // are keys that conflict.
             $query = array_merge($_POST, $_GET);
@@ -134,7 +136,7 @@ class Evidence
 
         // Protocol
 
-        if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+        if (isset($server['HTTPS']) && ($server['HTTPS'] == 'on' || $server['HTTPS'] == 1) || isset($server['HTTP_X_FORWARDED_PROTO']) && $server['HTTP_X_FORWARDED_PROTO'] == 'https') {
             $protocol = 'https';
         } else {
             $protocol = 'http';
@@ -142,15 +144,14 @@ class Evidence
 
         // Override protocol with referer header if set
 
-        if (isset($_SERVER["HTTP_REFERER"]) && $_SERVER["HTTP_REFERER"]) {
-            $protocol = parse_url($_SERVER["HTTP_REFERER"], PHP_URL_SCHEME);
+        if (isset($server["HTTP_REFERER"]) && $server["HTTP_REFERER"]) {
+            $protocol = parse_url($server["HTTP_REFERER"], PHP_URL_SCHEME);
         }
 
         $evidence["header.protocol"] = $protocol;
           
         $this->setArray($evidence);
     }
-
 
     /**
         * Get a piece of evidence by key
