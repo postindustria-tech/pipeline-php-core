@@ -148,6 +148,7 @@ class PipelineBuilder
     * }`
     * @param string file name of the file to load config, or alternatively
     * pass a config object already read from file
+    * @return Pipeline
     */
     public function buildFromConfig($fileOrConfig)
     {
@@ -172,6 +173,6 @@ class PipelineBuilder
             $this->flowElements[] = $flowElement;
         }
 
-        return $this;
+        return new Pipeline($this->flowElements, $this->settings);
     }
 }
