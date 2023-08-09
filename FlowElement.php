@@ -1,7 +1,7 @@
 <?php
 /* *********************************************************************
  * This Original Work is copyright of 51 Degrees Mobile Experts Limited.
- * Copyright 2022 51 Degrees Mobile Experts Limited, Davidson House,
+ * Copyright 2023 51 Degrees Mobile Experts Limited, Davidson House,
  * Forbury Square, Reading, Berkshire, United Kingdom RG1 3EU.
  *
  * This Original Work is licensed under the European Union Public Licence
@@ -14,10 +14,10 @@
  * amended by the European Commission) shall be deemed incompatible for
  * the purposes of the Work and the provisions of the compatibility
  * clause in Article 5 of the EUPL shall not apply.
- * 
- * If using the Work as, or as part of, a network application, by 
+ *
+ * If using the Work as, or as part of, a network application, by
  * including the attribution notice(s) required under Article 5 of the EUPL
- * in the end user terms of the application under an appropriate heading, 
+ * in the end user terms of the application under an appropriate heading,
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
@@ -121,5 +121,18 @@ class FlowElement
         foreach ($this->pipelines as $pipeline) {
             $pipeline->updatePropertyDatabaseForFlowElement($this);
         }
+    }
+
+    /**
+     * A default dummy constructor is needed for there are classes inheriting this 
+     * class deeper than 1-level of inheritance and calling parent::__construct() in their
+     * explicit constructors unfortunately intermediates do not define their own __construct()
+     * so the call propagates up to the base class FlowElement and fails.  
+     * Intermediates might define their own __construct() at some point, so we do not want
+     * remove parent::__construct() calls, rather add this one as a catch all.
+     * 
+     * */
+    public function __construct() {
+
     }
 }
