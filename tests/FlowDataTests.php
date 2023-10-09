@@ -21,9 +21,7 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-namespace fiftyone\pipeline\engines\tests;
-
-require(__DIR__ . "/../vendor/autoload.php");
+namespace fiftyone\pipeline\core\tests;
 
 use fiftyone\pipeline\core\FlowData;
 use fiftyone\pipeline\core\ElementData;

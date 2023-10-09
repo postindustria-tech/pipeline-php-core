@@ -21,13 +21,12 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-require(__DIR__ . "/../vendor/autoload.php");
+namespace fiftyone\pipeline\core\tests;
 
 use fiftyone\pipeline\core\FlowElement;
 use fiftyone\pipeline\core\PipelineBuilder;
 use fiftyone\pipeline\core\ElementDataDictionary;
 use fiftyone\pipeline\core\AspectPropertyValue;
-
 use PHPUnit\Framework\TestCase;
 
 class TestEngine extends FlowElement

@@ -21,9 +21,7 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-namespace fiftyone\pipeline\core\tests;
-
-use fiftyone\pipeline\core\AspectPropertyValue;
+namespace fiftyone\pipeline\core\tests\classes;
 
 /**
  * Constansts used in UACHTests class.
