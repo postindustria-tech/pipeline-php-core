@@ -22,17 +22,17 @@
  * ********************************************************************* */
 
 /**
-* @example CustomFlowElement.php
-*
-* This example demonstrates the creation of a custom flow element. In this case
-* the FlowElement takes the results of a client side form collecting
-* date of birth, setting this as evidence on a FlowData object to calculate
-* a person's starsign. The FlowElement also serves additional JavaScript
-* which gets a user's geolocation and saves the latitude as a cookie.
-* This latitude is also then passed in to the FlowData to calculate if
-* a person is in the northern or southern hemispheres.
+ * @example CustomFlowElement.php
+ *
+ * This example demonstrates the creation of a custom flow element. In this case
+ * the FlowElement takes the results of a client side form collecting
+ * date of birth, setting this as evidence on a FlowData object to calculate
+ * a person's starsign. The FlowElement also serves additional JavaScript
+ * which gets a user's geolocation and saves the latitude as a cookie.
+ * This latitude is also then passed in to the FlowData to calculate if
+ * a person is in the northern or southern hemispheres.
 
-*/
+ */
 
 include(__DIR__ . "/../vendor/autoload.php");
 
@@ -87,11 +87,11 @@ class AstrologyFlowElement extends FlowElement
     {
         $result = [];
 
-        
+
         // Get the date of birth from the query string (submitted through
         // a form on the client side)
         $dateOfBirth = $FlowData->evidence->get("query.dateOfBirth");
-        
+
         if ($dateOfBirth) {
             $dateOfBirth = explode("-", $dateOfBirth);
 

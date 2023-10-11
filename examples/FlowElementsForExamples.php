@@ -73,7 +73,7 @@ class ExampleFlowElementB extends FlowElement
 }
 
 
-if (!class_exists("errorFlowElement")) {
+if (!class_exists("ErrorFlowElement")) {
 // A FlowElement that triggers an error
 
     class ErrorFlowElement extends FlowElement
@@ -93,7 +93,7 @@ if (!class_exists("errorFlowElement")) {
 }
 
 
-if (!class_exists("stopFlowElement")) {
+if (!class_exists("StopFlowElement")) {
     // A FlowElement that stops processing
 
     class StopFlowElement extends FlowElement
