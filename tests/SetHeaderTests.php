@@ -23,12 +23,10 @@
 
 namespace fiftyone\pipeline\core\tests;
 
-require_once(__DIR__ . "/../vendor/autoload.php");
-require_once(__DIR__ . "/classes/TestPipeline.php");
-require_once(__DIR__ . "/classes/Constants.php");
-
 use fiftyone\pipeline\core\SetHeaderElement;
 use fiftyone\pipeline\core\Messages;
+use fiftyone\pipeline\core\tests\classes\Constants;
+use fiftyone\pipeline\core\tests\classes\TestPipeline;
 use fiftyone\pipeline\core\Utils;
 use fiftyone\pipeline\core\AspectPropertyValue;
 use PHPUnit\Framework\TestCase;

@@ -23,36 +23,47 @@
 
 
 
-namespace fiftyone\pipeline\core\tests\classes;
+namespace fiftyone\pipeline\core;
 
-use fiftyone\pipeline\core\PipelineBuilder;
+use fiftyone\pipeline\core\EvidenceKeyFilter;
 
-// Test Pipeline builder for use with PHP unit tests
-class TestPipeline
+/**
+  * An instance of EvidenceKeyFilter that uses a simple array of keys
+  * Evidence not using these keys is filtered out
+*/
+class BasicListEvidenceKeyFilter extends EvidenceKeyFilter
 {
-    public $pipeline;
+    private $list;
 
-    public $flowElement1;
-
-    public $flowData;
-
-    public $logger;
-
-    public function __construct($suppressException = true)
+    /**
+    * @param mixed[] an array of keys to keep
+    */
+    public function __construct($list)
     {
-        $this->logger = new MemoryLogger("info");
-        $this->flowElement1 = new ExampleFlowElement1();
-        $this->pipeline = (new PipelineBuilder())
-            ->add($this->flowElement1)
-            ->add(new ErrorFlowData())
-            ->add(new StopFlowData())
-            ->add(new ExampleFlowElement2())
-            ->addLogger($this->logger)
-            ->build();
-        $this->pipeline->suppressProcessExceptions = $suppressException;
-        $this->flowData = $this->pipeline->createFlowData();
-        $this->flowData->evidence->set("header.user-agent", "test");
-        $this->flowData->evidence->set("some.other-evidence", "test");
-        $this->flowData->process();
+        $this->list = $list;
+    }
+
+    /**
+    * @param string key to check in the filter
+    * @return boolean is this key in the filter's keys list?
+    */
+    public function filterEvidenceKey($key)
+    {
+        foreach ($this->list as $evidenceKey) {
+            if (strtolower($key) === strtolower($evidenceKey)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the internal list of evidence keys in this filter.
+     * @return mixed[] evidence keys
+     */
+    public function getList()
+    {
+        return $this->list;
     }
 }
