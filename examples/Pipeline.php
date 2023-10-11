@@ -22,11 +22,11 @@
  * ********************************************************************* */
 
 /**
-* @example Pipeline.php
-*
-* This example demonstrates how various FlowElements can be combined in a Pipeline and processed
-*
-*/
+ * @example Pipeline.php
+ *
+ * This example demonstrates how various FlowElements can be combined in a Pipeline and processed
+ *
+ */
 
 require(__DIR__ . "/../vendor/autoload.php");
 
@@ -38,12 +38,12 @@ require(__DIR__ . "/FlowElementsForExamples.php");
 
 // Two simple example FlowElements
 
-$fe1 = new exampleFlowElementA();
-$fe2 = new exampleFlowElementB();
+$fe1 = new ExampleFlowElementA();
+$fe2 = new ExampleFlowElementB();
 
 // A FlowElement that stops processing (and prevents and subsequent elements in the Pipeline from processing)
 
-$feStop = new stopFlowElement();
+$feStop = new StopFlowElement();
 
 // Pipelines can log info, errors and other messages if you supply a logger to them, here is a basic logger example that stores the logs in an array
 
@@ -62,11 +62,11 @@ class ArrayLogger extends Logger
 // We make a Pipeline with our elements
 
 $Pipeline = (new PipelineBuilder())
-            ->add($fe1)
-            ->add($feStop)
-            ->add($fe2)
-            ->addLogger(new ArrayLogger("info"))
-            ->build();
+    ->add($fe1)
+    ->add($feStop)
+    ->add($fe2)
+    ->addLogger(new ArrayLogger("info"))
+    ->build();
 
 // We create FlowData which we will add evidence to
 

@@ -25,11 +25,11 @@ namespace fiftyone\pipeline\core;
 
 use Exception;
 
-    /**
-     *  Set response headers element class. This is used to get response
-     *  headers based on what the browser supports. For example, newer
-     *  Chrome browsers support the Accept-CH header
-     */
+/**
+ *  Set response headers element class. This is used to get response
+ *  headers based on what the browser supports. For example, newer
+ *  Chrome browsers support the Accept-CH header
+ */
 class SetHeaderElement extends FlowElement {
 
     public $dataKey = "set-headers";
