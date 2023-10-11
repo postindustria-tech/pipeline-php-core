@@ -152,9 +152,13 @@ class SetHeaderElement extends FlowElement {
 		}
 
 		$propertyKey = strtolower($propertyKey);
-		if (isset($elementData->$propertyKey)) {
+		// TODO: catch is never called here. Consider replacing it with:
+		// if (isset($elementData->$propertyKey))
+		// The change can't be made right now, as it causes device-detection-php
+		// tests to fail. Further investigation is needed.
+		try {
             $property = $elementData->$propertyKey;
-		} else {
+		} catch (Exception $e) {
 			echo sprintf(Messages::PROPERTY_NOT_FOUND, $propertyKey, $elementKey);
 			return "";
 		}
