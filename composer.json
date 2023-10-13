@@ -23,7 +23,6 @@
     "license": "EUPL-1.2", 
     "type": "library",
     "require": {
-        "php": ">=7.4",
         "ext-ctype": "*",
         "ext-json": "*",
         "mustache/mustache": "^2.13",
