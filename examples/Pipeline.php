@@ -28,8 +28,6 @@
  *
  */
 
-require(__DIR__ . "/../vendor/autoload.php");
-
 use fiftyone\pipeline\core\PipelineBuilder;
 use fiftyone\pipeline\core\Logger;
 
