@@ -24,8 +24,8 @@
 namespace fiftyone\pipeline\core;
 
 /**
-    * Logging for a Pipeline
-*/
+ * Logging for a Pipeline
+ */
 class Logger
 {
     private $minLevel;

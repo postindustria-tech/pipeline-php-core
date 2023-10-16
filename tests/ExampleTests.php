@@ -23,8 +23,6 @@
 
 namespace fiftyone\pipeline\core\tests;
 
-require(__DIR__ . "/../vendor/autoload.php");
-
 use PHPUnit\Framework\TestCase;
 
 class ExampleTests extends TestCase

@@ -21,38 +21,48 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+namespace fiftyone\pipeline\core;
 
-
-namespace fiftyone\pipeline\core\tests\classes;
-
-use fiftyone\pipeline\core\PipelineBuilder;
-
-// Test Pipeline builder for use with PHP unit tests
-class TestPipeline
+/**
+* An extension of ElementData with dictionary object storage / lookup
+**/
+class ElementDataDictionary extends ElementData
 {
-    public $pipeline;
+    public $contents;
 
-    public $flowElement1;
-
-    public $flowData;
-
-    public $logger;
-
-    public function __construct($suppressException = true)
+    /**
+    * Constructor for element data dictionary
+    * @param FlowElement
+    * @param mixed[] dicitonary contents
+    */
+    public function __construct($flowElement, $contents)
     {
-        $this->logger = new MemoryLogger("info");
-        $this->flowElement1 = new ExampleFlowElement1();
-        $this->pipeline = (new PipelineBuilder())
-            ->add($this->flowElement1)
-            ->add(new ErrorFlowData())
-            ->add(new StopFlowData())
-            ->add(new ExampleFlowElement2())
-            ->addLogger($this->logger)
-            ->build();
-        $this->pipeline->suppressProcessExceptions = $suppressException;
-        $this->flowData = $this->pipeline->createFlowData();
-        $this->flowData->evidence->set("header.user-agent", "test");
-        $this->flowData->evidence->set("some.other-evidence", "test");
-        $this->flowData->process();
+        $this->contents = $contents;
+
+        parent::__construct($flowElement);
+    }
+    
+    /**
+    * Get the values contained in the ElementData instance as a dictionary
+    * of keys and values.
+    * @return mixed[]
+    */
+    public function asDictionary()
+    {
+        return $this->contents;
+    }
+
+    /**
+    * Internal getter for contents
+    * @param string key
+    * @return mixed
+    */
+    public function getInternal($key)
+    {
+        if (isset($this->contents[$key])) {
+            return $this->contents[$key];
+        } else {
+            return null;
+        }
     }
 }
