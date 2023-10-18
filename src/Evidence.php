@@ -23,8 +23,6 @@
 
 namespace fiftyone\pipeline\core;
 
-use fiftyone\pipeline\core\Messages;
-
 /**
   * Storage of evidence on a FlowData object
 */

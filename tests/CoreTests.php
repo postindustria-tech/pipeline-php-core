@@ -23,19 +23,12 @@
 
 namespace fiftyone\pipeline\core\tests;
 
-require(__DIR__ . "/../vendor/autoload.php");
-
-require(__DIR__ . "/classes/TestPipeline.php");
-
 use fiftyone\pipeline\core\PipelineBuilder;
-
-use fiftyone\pipeline\core\tests\ErrorFlowData;
-use fiftyone\pipeline\core\tests\StopFlowData;
-use fiftyone\pipeline\core\tests\MemoryLogger;
-use fiftyone\pipeline\core\tests\ExampleFlowElement1;
-use fiftyone\pipeline\core\tests\ExampleFlowElement2;
-use fiftyone\pipeline\core\tests\TestPipelineBuilder;
-
+use fiftyone\pipeline\core\tests\classes\ExampleFlowElement1;
+use fiftyone\pipeline\core\tests\classes\ExampleFlowElement2;
+use fiftyone\pipeline\core\tests\classes\MemoryLogger;
+use fiftyone\pipeline\core\tests\classes\StopFlowData;
+use fiftyone\pipeline\core\tests\classes\TestPipeline;
 use PHPUnit\Framework\TestCase;
 
 class CoreTests extends TestCase

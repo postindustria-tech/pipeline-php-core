@@ -23,7 +23,6 @@
 
 namespace fiftyone\pipeline\core;
 
-use fiftyone\pipeline\core\Messages;
 /**
   * FlowData is created by a specific Pipeline
   * It collects evidence set by the user

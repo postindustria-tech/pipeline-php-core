@@ -23,7 +23,7 @@
 
 
 
-namespace fiftyone\pipeline\core\tests;
+namespace fiftyone\pipeline\core\tests\classes;
 
 use fiftyone\pipeline\core\FlowElement;
 use fiftyone\pipeline\core\BasicListEvidenceKeyFilter;
