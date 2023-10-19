@@ -34,6 +34,7 @@ namespace fiftyone\pipeline\core;
 class JsonBundlerElement extends FlowElement
 {
     public $dataKey = "jsonbundler";
+    public $json;
     private $propertyCache = [];
 
     /**

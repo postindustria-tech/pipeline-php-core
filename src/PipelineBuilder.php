@@ -68,10 +68,10 @@ class PipelineBuilder
             $flowElements[] = new SequenceElement();
             $flowElements[] = new JsonBundlerElement();
     
-            if (property_exists($this, "javascriptBuilderSettings")) {
-                $flowElements[] = new JavascriptBuilderElement($this->javascriptBuilderSettings);
-            } else {
+            if ($this->javascriptBuilderSettings === null) {
                 $flowElements[] = new JavascriptBuilderElement([]);
+            } else {
+                $flowElements[] = new JavascriptBuilderElement($this->javascriptBuilderSettings);
             }
         }
    
