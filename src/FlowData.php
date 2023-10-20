@@ -37,7 +37,6 @@ class FlowData
     public $data;
     public $processed;
     public $errors = array();
-    public $jsonbundler;
 
     /**
      * Constructor for FlowData
