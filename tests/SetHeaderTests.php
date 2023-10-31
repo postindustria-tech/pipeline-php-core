@@ -23,6 +23,7 @@
 
 namespace fiftyone\pipeline\core\tests;
 
+use fiftyone\pipeline\core\ElementDataDictionary;
 use fiftyone\pipeline\core\SetHeaderElement;
 use fiftyone\pipeline\core\Messages;
 use fiftyone\pipeline\core\tests\classes\Constants;
@@ -37,10 +38,10 @@ class SetHeaderTests extends TestCase
 	public static function provider_testGetResponseHeaderValue()
     {
         return array(
-        array(array("device" => (object) array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN), "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN))), ""),
-		array(array("device" => (object) array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE))), "SEC-CH-UA,SEC-CH-UA-Full-Version"),
-		array(array("device" => (object) array( "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE))), "SEC-CH-UA-Model,SEC-CH-UA-Mobile,SEC-CH-UA-Arch,SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version"),
-        array(array("device" => (object) array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE), "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE))), "SEC-CH-UA,SEC-CH-UA-Full-Version,SEC-CH-UA-Model,SEC-CH-UA-Mobile,SEC-CH-UA-Arch,SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version")
+        array(array("device" => new ElementDataDictionary(null, array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN), "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN)))), ""),
+		array(array("device" => new ElementDataDictionary(null, array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE)))), "SEC-CH-UA,SEC-CH-UA-Full-Version"),
+		array(array("device" => new ElementDataDictionary(null, array( "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE)))), "SEC-CH-UA-Model,SEC-CH-UA-Mobile,SEC-CH-UA-Arch,SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version"),
+        array(array("device" => new ElementDataDictionary(null, array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE), "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE)))), "SEC-CH-UA,SEC-CH-UA-Full-Version,SEC-CH-UA-Model,SEC-CH-UA-Mobile,SEC-CH-UA-Arch,SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version")
         );
     }
 
