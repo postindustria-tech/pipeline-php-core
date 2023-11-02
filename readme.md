@@ -47,5 +47,5 @@ and on our [website](http://51degrees.com/documentation/_examples__device_detect
 ## Tests
 To run the tests in this repository, make sure PHPUnit is installed then, in the root of this repo, call:
 ```
-phpunit --log-junit test-results.xml
+phpunit --fail-on-warning --display-warnings --log-junit test-results.xml
 ```
