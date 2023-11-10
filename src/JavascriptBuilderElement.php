@@ -122,17 +122,16 @@ class JavascriptBuilderElement extends FlowElement
         $vars["_host"] = $host;
         $vars["_protocol"] = $protocol;
 
+        $params = $this->getEvidenceKeyFilter()->filterEvidence($flowData->evidence->getAll());
+
         if ($vars["_host"] && $vars["_protocol"] && $vars["_endpoint"]) {
             $vars["_url"] = $vars["_protocol"] . "://" . $vars["_host"] . $vars["_endpoint"];
             
 
             // Add query parameters to the URL
-
-            $queryParams = $this->getEvidenceKeyFilter()->filterEvidence($flowData->evidence->getAll());
-  
             $query = [];
  
-            foreach ($queryParams as $param => $paramValue) {
+            foreach ($params as $param => $paramValue) {
                 $paramKey = explode(".", $param)[1];
 
                 $query[$paramKey] = $paramValue;
@@ -167,6 +166,16 @@ class JavascriptBuilderElement extends FlowElement
         // Check if any delayedproperties exist in the json
 
         $vars["_hasDelayedProperties"] = strpos($vars["_jsonObject"], "delayexecution") !== false;
+        $vars["_sessionId"] = $flowData->evidence->get("query.session-id");
+        $vars["_sequence"] = $flowData->evidence->get("query.sequence");
+        
+        $jsParams = [];
+        foreach ($params as $param => $paramValue) {
+            $paramKey = explode(".", $param)[1];
+            $jsParams[$paramKey] = $paramValue;
+        }
+        
+        $vars["_parameters"] = json_encode($jsParams);
          
         $output = $m->render(file_get_contents(__DIR__ . "/../javascript-templates/JavaScriptResource.mustache"), $vars);
 
