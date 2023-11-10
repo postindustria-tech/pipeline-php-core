@@ -168,7 +168,7 @@ class JavascriptBuilderElement extends FlowElement
 
         $vars["_hasDelayedProperties"] = strpos($vars["_jsonObject"], "delayexecution") !== false;
          
-        $output = $m->render(file_get_contents(__DIR__ . "/JavaScriptResource.mustache"), $vars);
+        $output = $m->render(file_get_contents(__DIR__ . "/../javascript-templates/JavaScriptResource.mustache"), $vars);
 
 		if($this->minify) {
             // Minify the output
