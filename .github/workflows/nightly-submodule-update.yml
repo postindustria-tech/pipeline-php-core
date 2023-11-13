@@ -1,4 +1,4 @@
-name: Nightly PRs to Main
+name: Nightly Submodule Update
 
 on:
   workflow_dispatch:
@@ -7,13 +7,12 @@ on:
         default: false
         type: boolean
         description: Dry Run
-  workflow_run:
-    workflows: [Nightly Submodule Update]
-    types: [completed]
+  schedule:
+    - cron: '0 1 * * *'
 
 jobs:
-  Nightly_PRs_to_Main:
-    uses: 51Degrees/common-ci/.github/workflows/nightly-prs-to-main.yml@main
+  Nightly_Submodule_Update:
+    uses: 51Degrees/common-ci/.github/workflows/nightly-submodule-update.yml@main
     with:
       repo-name: ${{ github.event.repository.name }}
       org-name: ${{ github.event.repository.owner.login }}
