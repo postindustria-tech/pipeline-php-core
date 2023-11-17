@@ -46,7 +46,8 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/51Degrees/javascript-templates"
+            "url": "https://github.com/51Degrees/javascript-templates",
+            "no-api": true
         }
     ]
 }
