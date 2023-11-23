@@ -24,28 +24,30 @@
 namespace fiftyone\pipeline\core;
 
 /**
-  * Storage of evidence on a FlowData object
-*/
+ * Storage of evidence on a FlowData object.
+ */
 class Evidence
 {
     protected $flowData;
-    protected $evidence = array();
+    protected $evidence = [];
 
     /**
-        * evidence container constructor
-        * @param FlowData parent FlowData
-    */
+     * Evidence container constructor.
+     *
+     * @param FlowData $flowData Parent FlowData
+     */
     public function __construct($flowData)
     {
         $this->flowData = $flowData;
     }
 
     /**
-        * If a flow element can use the key then add the key value pair to the
-        * evidence collection
-        * @param string key
-        * @param mixed value
-    */
+     * If a flow element can use the key then add the key value pair to the
+     * evidence collection.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
     public function set($key, $value)
     {
         $keep = false;
@@ -63,13 +65,14 @@ class Evidence
     }
 
     /**
-        * Helper function to set multiple pieces of evidence from an array
-        * @param mixed[]
-    */
+     * Helper function to set multiple pieces of evidence from an array.
+     *
+     * @param array $array
+     */
     public function setArray($array)
     {
         if (!is_array($array)) {
-            $this->flowData->setError("core", Messages::PASS_KEY_VALUE);
+            $this->flowData->setError('core', Messages::PASS_KEY_VALUE);
         }
 
         foreach ($array as $key => $value) {
@@ -78,13 +81,14 @@ class Evidence
     }
 
     /**
-        * Extract evidence from a web request
-        * No argument version automatically reads from current request using the
-        * $_SERVER, $_COOKIE, $_GET and $_POST globals
-        * @param $server key value pairs for the HTTP headers
-        * @param $cookies key value pairs for the cookies
-        * @param $query key value pairs for the form parameters
-    */
+     * Extract evidence from a web request
+     * No argument version automatically reads from current request using the
+     * $_SERVER, $_COOKIE, $_GET and $_POST globals.
+     *
+     * @param null|array $server Key-value pairs for the HTTP headers
+     * @param null|array $cookies Key-value pairs for the cookies
+     * @param null|array $query Key-value pairs for the form parameters
+     */
     public function setFromWebRequest($server = null, $cookies = null, $query = null)
     {
         if ($server === null) {
@@ -101,32 +105,32 @@ class Evidence
             $query = array_merge($_POST, $_GET);
         }
 
-        $evidence = array();
-  
+        $evidence = [];
+
         foreach ($server as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
                 $key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
-  
+
                 $key = strtolower($key);
-  
-                $evidence["header." . $key] = $value;
+
+                $evidence['header.' . $key] = $value;
             }
         }
-  
+
         foreach ($cookies as $key => $value) {
-            $evidence["cookie." . $key] = $value;
+            $evidence['cookie.' . $key] = $value;
         }
 
         foreach ($query as $key => $value) {
-            $evidence["query." . $key] = $value;
-        }
-  
-        if (isset($server["SERVER_ADDR"])) {
-            $evidence["server.host-ip"] = $server["SERVER_ADDR"];
+            $evidence['query.' . $key] = $value;
         }
 
-        if (isset($server["REMOTE_ADDR"])) {
-            $evidence["server.client-ip"] = $server["REMOTE_ADDR"];
+        if (isset($server['SERVER_ADDR'])) {
+            $evidence['server.host-ip'] = $server['SERVER_ADDR'];
+        }
+
+        if (isset($server['REMOTE_ADDR'])) {
+            $evidence['server.client-ip'] = $server['REMOTE_ADDR'];
         }
 
         // Protocol
@@ -139,32 +143,34 @@ class Evidence
 
         // Override protocol with referer header if set
 
-        if (isset($server["HTTP_REFERER"]) && $server["HTTP_REFERER"]) {
-            $protocol = parse_url($server["HTTP_REFERER"], PHP_URL_SCHEME);
+        if (isset($server['HTTP_REFERER']) && $server['HTTP_REFERER']) {
+            $protocol = parse_url($server['HTTP_REFERER'], PHP_URL_SCHEME);
         }
 
-        $evidence["header.protocol"] = $protocol;
-          
+        $evidence['header.protocol'] = $protocol;
+
         $this->setArray($evidence);
     }
 
     /**
-        * Get a piece of evidence by key
-        * @param string key
-    */
+     * Get a piece of evidence by key.
+     *
+     * @param string $key
+     */
     public function get($key)
     {
         if (isset($this->evidence[$key])) {
             return $this->evidence[$key];
-        } else {
-            return null;
-        };
+        }
+
+        return null;
     }
 
     /**
-        * Get all evidence
-        * @return mixed[]
-    */
+     * Get all evidence.
+     *
+     * @return array
+     */
     public function getAll()
     {
         return $this->evidence;

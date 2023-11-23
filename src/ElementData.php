@@ -25,85 +25,92 @@ namespace fiftyone\pipeline\core;
 
 /**
  * Stores information created by a FlowElement based on FlowData.
- * Stored in FlowData
-*/
+ * Stored in FlowData.
+ */
 class ElementData
 {
     public $flowElement;
 
     /**
-    * Constructor for element data
-    * @param FlowElement
-    */
+     * Constructor for element data.
+     *
+     * @param FlowElement $flowElement
+     */
     public function __construct($flowElement)
     {
         $this->flowElement = $flowElement;
-    }
-
-    /**
-    * Get a value from the ElementData contents
-    * This calls the ElementData class' (often overridden) getInternal method
-    * @param string property
-    * @return mixed
-    */
-    public function get($key)
-    {
-        return $this->getInternal($key);
     }
 
     public function __get($key)
     {
         return $this->get($key);
     }
-    
+
     /**
-    * Get the values contained in the ElementData instance as a dictionary
-    * of keys and values.
-    * @return mixed[]
-    */
-    public function asDictionary()
+     * Get a value from the ElementData contents
+     * This calls the ElementData class' (often overridden) getInternal method.
+     *
+     * @param string $key Property name
+     * @return mixed
+     */
+    public function get($key)
     {
-        return;
+        return $this->getInternal($key);
     }
-    
+
     /**
-    * Called by the get() method
-    * Returns the requested property from the data
-    * @param string property
-    * @return mixed
-    */
-    protected function getInternal($key)
+     * Get the values contained in the ElementData instance as a dictionary
+     * of keys and values.
+     *
+     * @return array
+     */
+    public function asDictionary()
     {
         return;
     }
 
     /**
-    * Helper method to get property as a string
-    * @param string property
-    * @return string
-    */
+     * Helper method to get property as a string.
+     *
+     * @param string $key Property name
+     * @return string
+     */
     public function getAsString($key)
     {
         return strval($this->get($key));
     }
 
     /**
-    * Helper method to get property as a float
-    * @param string property
-    * @return float
-    */
+     * Helper method to get property as a float.
+     *
+     * @param string $key
+     * @return float
+     */
     public function getAsFloat($key)
     {
         return floatval($this->get($key));
     }
 
     /**
-    * Helper method to get property as a int
-    * @param string property
-    * @return int
-    */
+     * Helper method to get property as a int.
+     *
+     * @param string $key Property name
+     * @return int
+     */
     public function getAsInteger($key)
     {
         return intval($this->get($key));
+    }
+
+    /**
+     * Called by the get() method
+     * Returns the requested property from the data.
+     *
+     * @param string $key Property name
+     * @return mixed
+     */
+    protected function getInternal($key)
+    {
+        return;
     }
 }

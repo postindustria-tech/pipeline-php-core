@@ -24,26 +24,24 @@
 namespace fiftyone\pipeline\core;
 
 /**
- * Logging for a Pipeline
+ * Logging for a Pipeline.
  */
 class Logger
 {
-    private $minLevel;
-    
-    private $levels = ["trace", "debug", "information", "warning", "error", "critical"];
-
     public $settings;
+    private $minLevel;
+    private $levels = ['trace', 'debug', 'information', 'warning', 'error', 'critical'];
 
     /**
-     * Create a logger
-     * @param string level ("trace", "debug", "information", "warning", "error", "critical")
-     * @param array settings - customs settings for a logger
+     * Create a logger.
      *
-    **/
-    public function __construct($level, $settings = array())
+     * @param string $level Values: 'trace', 'debug', 'information', 'warning', 'error', 'critical'
+     * @param array $settings Custom settings for a logger
+     */
+    public function __construct($level, $settings = [])
     {
         if (!$level) {
-            $level = "error";
+            $level = 'error';
         }
 
         $this->settings = $settings;
@@ -51,31 +49,32 @@ class Logger
     }
 
     /**
-     * Log a message
-     * @param string message level
-     * @param string message
-    */
+     * Log a message.
+     *
+     * @param string $level
+     * @param string $message
+     */
     public function log($level, $message)
     {
         $levelIndex = array_search(strtolower($level), $this->levels);
 
         if ($levelIndex >= $this->minLevel) {
-            $log = array(
-    
-                "time" => date('Y-m-d H:i:s'),
-                "level" => $level,
-                "message" => $message
-    
-            );
+            $log = [
+                'time' => date('Y-m-d H:i:s'),
+                'level' => $level,
+                'message' => $message
+            ];
 
             $this->logInternal($log);
         }
     }
 
     /**
-     * Internal logging function overriden by specific loggers
-     * @param array log
-    */
+     * Internal logging function overridden by specific loggers.
+     *
+     * @param array $log
+     * @return array
+     */
     public function logInternal($log)
     {
         return $log;

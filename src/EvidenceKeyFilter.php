@@ -24,39 +24,51 @@
 namespace fiftyone\pipeline\core;
 
 /**
-  * An evidence key filter is added to a FlowElement
-  * It tells the Pipeline which evidence it is interested in
-  * This can be used to determine whether a request can be cached
-  * Or to filter out evidence not needed by any element in a Pipeline
-  * This base class is always extended for a specific filter type
-*/
+ * An evidence key filter is added to a FlowElement
+ * It tells the Pipeline which evidence it is interested in
+ * This can be used to determine whether a request can be cached
+ * Or to filter out evidence not needed by any element in a Pipeline
+ * This base class is always extended for a specific filter type.
+ */
 class EvidenceKeyFilter
 {
-    private $_filterEvidenceKey = null;
+    /**
+     * @var null|callable
+     */
+    private $_filterEvidenceKey;
+
+    public function __set($name, $value)
+    {
+        if ($name === 'filterEvidenceKey') {
+            $this->_filterEvidenceKey = $value;
+        }
+    }
 
     /**
-    * filterevidence from an object
-    * @param mixed[] evidence dicitonary contents
-    * @return mixed[] filtered evidence dictionary contents
-    */
+     * Filter Evidence from an object.
+     *
+     * @param array $evidenceKeyObject Evidence dictionary contents
+     * @return array Filtered evidence dictionary contents
+     */
     public function filterEvidence($evidenceKeyObject)
     {
-        $filtered = array();
+        $filtered = [];
 
         foreach ($evidenceKeyObject as $key => $value) {
             if ($this->filterEvidenceKey($key)) {
                 $filtered[$key] = $value;
             }
-        };
+        }
 
         return $filtered;
     }
 
     /**
-    * see if a property key should be in the filtered evidence
-    * @param string property name
-    * @return boolean should this be filtered out or not?
-    */
+     * Check whether a property key should be in the filtered evidence.
+     *
+     * @param string $key Property name
+     * @return bool Should this be filtered out or not?
+     */
     public function filterEvidenceKey($key)
     {
         if ($this->_filterEvidenceKey) {
@@ -64,12 +76,5 @@ class EvidenceKeyFilter
         }
 
         return true;
-    }
-
-    public function __set($name, $value)
-    {
-        if ($name === 'filterEvidenceKey') {
-            $this->_filterEvidenceKey = $value;
-        }
     }
 }

@@ -24,48 +24,40 @@
 namespace fiftyone\pipeline\core;
 
 /**
-* Pipeline holding a list of FlowElements for processing,
-* can create FlowData that will be passed through these,
-* collecting ElementData
-* Should be constructed through the PipelineBuilder class
-**/
+ * Pipeline holding a list of FlowElements for processing,
+ * can create FlowData that will be passed through these,
+ * collecting ElementData
+ * Should be constructed through the PipelineBuilder class.
+ */
 class Pipeline
 {
     public $flowElements;
-    public $flowElementsList = array();
+    public $flowElementsList = [];
     public $logger;
     public $metaDataStore;
     public $suppressProcessExceptions;
     public $propertyDatabase;
 
     /**
-     * Pipeline constructor
-     * @param FlowElement[] list of FlowElements
-     * @param array settings array
-    */
+     * Pipeline constructor.
+     *
+     * @param FlowElement[] $flowElements List of FlowElements
+     * @param array $settings
+     */
     public function __construct($flowElements, $settings)
     {
-        if (!isset($settings["logger"])) {
-            $this->logger = new Logger(null, null);
-        } else {
-            $this->logger = $settings["logger"];
-        }
+        $this->logger = $settings['logger'] ?? new Logger(null);
 
-        /* If true then pipeline will suppress exceptions 
-        added to FlowData errors otherwise will throw the
-        exception occurred during the processing of first
-        element.*/
-        if (!isset($settings["suppressProcessExceptions"])) {
-            $this->suppressProcessExceptions = false;
-        } else {
-            $this->suppressProcessExceptions = $settings["suppressProcessExceptions"];
-        }
-
-        $this->log("info", "test");
+        /*
+         * If true then pipeline will suppress exceptions added to FlowData errors,
+         * otherwise will throw the exception occurred during the processing of the
+         * first element.
+         */
+        $this->suppressProcessExceptions = (bool) ($settings['suppressProcessExceptions'] ?? false);
 
         $this->flowElements = $flowElements;
 
-        $this->propertyDatabase = array();
+        $this->propertyDatabase = [];
 
         foreach ($flowElements as $flowElement) {
             $this->flowElementsList[$flowElement->dataKey] = $flowElement;
@@ -79,22 +71,28 @@ class Pipeline
     }
 
     /**
-     * Create a FlowData based on what's in the Pipeline
+     * Create a FlowData based on what's in the Pipeline.
+     *
      * @return FlowData
-    */
+     */
     public function createFlowData()
     {
-        return new FlowData($this, $this->flowElements);
+        return new FlowData($this);
     }
 
+    /**
+     * @param string $level
+     * @param string $message
+     */
     public function log($level, $message)
     {
         $this->logger->log($level, $message);
     }
 
     /**
-     * Get a FlowElement by its name
-     * @param string name
+     * Get a FlowElement by its name.
+     *
+     * @param string $key
      * @return FlowElement
      */
     public function getElement($key)
@@ -103,19 +101,19 @@ class Pipeline
     }
 
     /**
-     * Update metadata store for a FlowElement based on its list of properties
-     * @param FlowElement
+     * Update metadata store for a FlowElement based on its list of properties.
+     *
+     * @param FlowElement $flowElement
      */
     public function updatePropertyDatabaseForFlowElement($flowElement)
     {
         $dataKey = $flowElement->dataKey;
 
         // First unset any properties stored by the FlowElement
-
         foreach ($this->propertyDatabase as $propertyValues) {
             foreach ($propertyValues as $propertyList) {
                 foreach ($propertyList as $key => $info) {
-                    if ($info["flowElement"] === $dataKey) {
+                    if ($info['flowElement'] === $dataKey) {
                         unset($propertyList[$key]);
                     }
                 }
@@ -126,24 +124,23 @@ class Pipeline
 
         foreach ($properties as $key => $property) {
             foreach ($property as $metaKey => $metaValue) {
-                $metaKey = \strtolower($metaKey);
-
+                $metaKey = strtolower($metaKey);
 
                 if (!isset($this->propertyDatabase[$metaKey])) {
-                    $this->propertyDatabase[$metaKey] = array();
+                    $this->propertyDatabase[$metaKey] = [];
                 }
 
-                if (is_string($metaValue)) {
-                    $metaValue = \strtolower($metaValue);
-                } else {
+                if (!is_string($metaValue)) {
                     continue;
                 }
 
+                $metaValue = strtolower($metaValue);
+
                 if (!isset($this->propertyDatabase[$metaKey][$metaValue])) {
-                    $this->propertyDatabase[$metaKey][$metaValue] = array();
+                    $this->propertyDatabase[$metaKey][$metaValue] = [];
                 }
 
-                $property["flowElement"] = $dataKey;
+                $property['flowElement'] = $dataKey;
 
                 $this->propertyDatabase[$metaKey][$metaValue][$key] = $property;
             }
