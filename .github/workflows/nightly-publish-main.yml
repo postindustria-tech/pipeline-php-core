@@ -21,4 +21,3 @@ jobs:
       build-platform: ubuntu-latest
     secrets:
       token: ${{ secrets.ACCESS_TOKEN }}
-      asset-keys: '{}'
