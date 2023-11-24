@@ -28,41 +28,36 @@ namespace fiftyone\pipeline\core;
  * messages, or otherwise. Messages which require formatting will contain
  * format characters e.g. %s.
  */
-class Messages {
+class Messages
+{
     /**
      * Error message thrown when there is no matching element in the FlowData.
      */
-    const NO_ELEMENT_DATA = "There is no element data for '%s' against "
-        . "this flow data. Available element data keys are: '%s'";
-    const NO_ELEMENT_DATA_NULL = "There is no element data for '%s' against "
-        . "this flow data.'";
-	const PASS_KEY_VALUE = "Must pass key and value";
-	const FLOW_DATA_PROCESSED = "FlowData already processed";
+    public const NO_ELEMENT_DATA = "There is no element data for '%s' against this flow data. Available element data keys are: '%s'";
+    public const NO_ELEMENT_DATA_NULL = "There is no element data for '%s' against this flow data.'";
+    public const PASS_KEY_VALUE = 'Must pass key and value';
+    public const FLOW_DATA_PROCESSED = 'FlowData already processed';
 
     /**
-     * Property does not start with SetHeader. This takes the name of a property
-     * as a format argument.
+     * Property does not start with SetHeader. This takes the name of a property as a format argument.
      */
-    const PROPERTY_NOT_SET_HEADER = "Property Name '%s' does not start with 'SetHeader'.";
-    
+    public const PROPERTY_NOT_SET_HEADER = "Property Name '%s' does not start with 'SetHeader'.";
+
     /**
-     * Property Name is not in the valid format. This takes the property name 
+     * Property Name is not in the valid format. This takes the property name
      * as format argument.
      */
-    const WRONG_PROPERTY_FORMAT = 
-        "Property Name '%s' is not in the expected format i.e. SetHeader[Component][HeaderName]. ";
+    public const WRONG_PROPERTY_FORMAT = "Property Name '%s' is not in the expected format i.e. SetHeader[Component][HeaderName]. ";
 
     /**
-     * Element not found in flowData. This takes the element datakey 
+     * Element not found in flowData. This takes the element datakey
      * as format argument.
      */
-    const ELEMENT_NOT_FOUND = 
-        "Element '%s' is not present in the FlowData. ";
+    public const ELEMENT_NOT_FOUND = "Element '%s' is not present in the FlowData. ";
 
     /**
-     * Property not found in flowData. This takes the element datakey
+     * Property not found in flowData. This takes the element dataKey
      * and property names as format arguments.
-     */ 
-    const PROPERTY_NOT_FOUND = 
-        "Property '%s' is not present in the FlowData against '%s' ElementData. ";
+     */
+    public const PROPERTY_NOT_FOUND = "Property '%s' is not present in the FlowData against '%s' ElementData. ";
 }

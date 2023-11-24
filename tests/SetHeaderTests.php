@@ -23,100 +23,159 @@
 
 namespace fiftyone\pipeline\core\tests;
 
+use fiftyone\pipeline\core\AspectPropertyValue;
 use fiftyone\pipeline\core\ElementDataDictionary;
-use fiftyone\pipeline\core\SetHeaderElement;
 use fiftyone\pipeline\core\Messages;
+use fiftyone\pipeline\core\SetHeaderElement;
 use fiftyone\pipeline\core\tests\classes\Constants;
 use fiftyone\pipeline\core\tests\classes\TestPipeline;
 use fiftyone\pipeline\core\Utils;
-use fiftyone\pipeline\core\AspectPropertyValue;
 use PHPUnit\Framework\TestCase;
 
 class SetHeaderTests extends TestCase
-{  
+{
     // Data Provider for testGetResponseHeaderValue
-	public static function provider_testGetResponseHeaderValue()
+    public static function provider_testGetResponseHeaderValue()
     {
-        return array(
-        array(array("device" => new ElementDataDictionary(null, array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN), "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::UNKNOWN)))), ""),
-		array(array("device" => new ElementDataDictionary(null, array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE)))), "SEC-CH-UA,SEC-CH-UA-Full-Version"),
-		array(array("device" => new ElementDataDictionary(null, array( "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE)))), "SEC-CH-UA-Model,SEC-CH-UA-Mobile,SEC-CH-UA-Arch,SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version"),
-        array(array("device" => new ElementDataDictionary(null, array( "setheaderbrowseraccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE), "setheaderplatformaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE), "setheaderhardwareaccept-ch" => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE)))), "SEC-CH-UA,SEC-CH-UA-Full-Version,SEC-CH-UA-Model,SEC-CH-UA-Mobile,SEC-CH-UA-Arch,SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version")
-        );
+        return [
+            [
+                [
+                    'device' => new ElementDataDictionary(null, [
+                        'setheaderbrowseraccept-ch' => new AspectPropertyValue(null, Constants::UNKNOWN),
+                        'setheaderplatformaccept-ch' => new AspectPropertyValue(null, Constants::UNKNOWN),
+                        'setheaderhardwareaccept-ch' => new AspectPropertyValue(null, Constants::UNKNOWN)
+                    ])
+                ],
+                ''
+            ],
+            [
+                [
+                    'device' => new ElementDataDictionary(null, [
+                        'setheaderbrowseraccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE)
+                    ])
+                ],
+                'SEC-CH-UA,SEC-CH-UA-Full-Version'
+            ],
+            [
+                [
+                    'device' => new ElementDataDictionary(null, [
+                        'setheaderplatformaccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE),
+                        'setheaderhardwareaccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE)
+                    ])
+                ],
+                'SEC-CH-UA-Model,SEC-CH-UA-Mobile,SEC-CH-UA-Arch,SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version'
+            ],
+            [
+                [
+                    'device' => new ElementDataDictionary(null, [
+                        'setheaderbrowseraccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE),
+                        'setheaderplatformaccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE),
+                        'setheaderhardwareaccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE)
+                    ])
+                ],
+                'SEC-CH-UA,SEC-CH-UA-Full-Version,SEC-CH-UA-Model,SEC-CH-UA-Mobile,SEC-CH-UA-Arch,SEC-CH-UA-Platform,SEC-CH-UA-Platform-Version'
+            ]
+        ];
     }
 
-    // Test response header value to be set for UACH
     /**
+     * Test response header value to be set for UACH.
+     *
      * @dataProvider provider_testGetResponseHeaderValue
+     * @param mixed $device
+     * @param mixed $expectedValue
      */
     public function testGetResponseHeaderValue($device, $expectedValue)
     {
-        $setHeaderPropertiesDict = array('device' => array('SetHeaderBrowserAccept-CH', 'SetHeaderHardwareAccept-CH', 'SetHeaderPlatformAccept-CH'));
+        $setHeaderPropertiesDict = [
+            'device' => [
+                'SetHeaderBrowserAccept-CH',
+                'SetHeaderHardwareAccept-CH',
+                'SetHeaderPlatformAccept-CH'
+            ]
+        ];
         $testPipeline = new TestPipeline();
         $setHeaderElement = new SetHeaderElement();
-		$testPipeline->flowData->data = $device;
-		$flowData = $testPipeline->flowData;
+        $testPipeline->flowData->data = $device;
+        $flowData = $testPipeline->flowData;
         $actualValue = $setHeaderElement->getResponseHeaderValue($flowData, $setHeaderPropertiesDict);
-        $this->assertEquals($expectedValue, $actualValue["Accept-CH"]);
-
+        $this->assertSame($expectedValue, $actualValue['Accept-CH']);
     }
-	
-    // Test response header not being sent for empty value
-    public function testSetResponseHeader_emptyHeader()
+
+    /**
+     * Test response header not being sent for empty value
+     */
+    public function testSetResponseHeaderEmptyHeader()
     {
-        $data = array("set-headers" => (object) array("responseheaderdictionary" => array("Accept-CH"=> "")));
-        $setHeaderPropertiesDict = array('device' => array('SetHeaderBrowserAccept-CH', 'SetHeaderHardwareAccept-CH', 'SetHeaderPlatformAccept-CH'));
+        $this->markTestSkipped('Nothing being tested because Utils::setResponseHeader() returns void');
+        
+        $data = [
+            'set-headers' => (object) [
+                'responseheaderdictionary' => [
+                    'Accept-CH' => ''
+                ]
+            ]
+        ];
+        $setHeaderPropertiesDict = [
+            'device' => [
+                'SetHeaderBrowserAccept-CH',
+                'SetHeaderHardwareAccept-CH',
+                'SetHeaderPlatformAccept-CH'
+            ]
+        ];
         $testPipeline = new TestPipeline();
         $testPipeline->flowData->data = $data;
         $flowData = $testPipeline->flowData;
-	    $actualValue = Utils::setResponseHeader($flowData);
-        $this->assertEquals(False, isset($actualValue["Accept-CH"]));
+        $actualValue = Utils::setResponseHeader($flowData);
+        $this->assertEquals(false, isset($actualValue['Accept-CH']));
     }
 
     // Data Provider for testGetResponseHeaderValue
-	public static function provider_testGetResponseHeaderName_Valid()
+    public static function provider_testGetResponseHeaderName_Valid()
     {
-        return array(
-        array("SetHeaderBrowserAccept-CH", "Accept-CH"),
-		array("SetHeaderBrowserCritical-CH", "Critical-CH"),
-        array("SetHeaderUnknownAccept-CH", "Accept-CH")
-        );
+        return [
+            ['SetHeaderBrowserAccept-CH', 'Accept-CH'],
+            ['SetHeaderBrowserCritical-CH', 'Critical-CH'],
+            ['SetHeaderUnknownAccept-CH', 'Accept-CH']
+        ];
     }
 
-    // Test get response header function for valid formats.
     /**
+     * Test get response header function for valid formats.
+     *
      * @dataProvider provider_testGetResponseHeaderName_Valid
+     * @param mixed $data
+     * @param mixed $expectedValue
      */
-    public function testGetResponseHeaderName_Valid($data, $expectedValue)
-    {
-    $setHeaderElement = new SetHeaderElement();
-    $actualValue = $setHeaderElement->getResponseHeaderName($data);
-    $this->assertEquals($expectedValue, $actualValue);
-    }
-
-    // Data Provider for testGetResponseHeaderValue
-	public static function provider_testGetResponseHeaderName_InValid()
-    {
-        return array(
-        array("TestBrowserAccept-CH", Messages::PROPERTY_NOT_SET_HEADER),
-        array("SetHeaderbrowserAccept-ch", Messages::WRONG_PROPERTY_FORMAT),
-		array("SetHeaderBrowseraccept-ch", Messages::WRONG_PROPERTY_FORMAT)
-        );
-    }
-
-    // Test get response header function for valid formats.
-    /**
-     * @dataProvider provider_testGetResponseHeaderName_InValid
-     */
-    public function testGetResponseHeaderName_InValid($data, $expectedValue)
+    public function testGetResponseHeaderNameValid($data, $expectedValue)
     {
         $setHeaderElement = new SetHeaderElement();
-    
-        try{
-            $setHeaderElement->getResponseHeaderName($data);
-        } catch(\Exception $e){
-            $this->assertEquals(sprintf($expectedValue, $data), $e->getMessage());
-        }
-    
+        $actualValue = $setHeaderElement->getResponseHeaderName($data);
+        $this->assertSame($expectedValue, $actualValue);
+    }
+
+    // Data Provider for testGetResponseHeaderValue
+    public static function provider_testGetResponseHeaderName_InValid()
+    {
+        return [
+            ['TestBrowserAccept-CH', Messages::PROPERTY_NOT_SET_HEADER],
+            ['SetHeaderbrowserAccept-ch', Messages::WRONG_PROPERTY_FORMAT],
+            ['SetHeaderBrowseraccept-ch', Messages::WRONG_PROPERTY_FORMAT]
+        ];
+    }
+
+    /**
+     * Test get response header function for valid formats.
+     *
+     * @dataProvider provider_testGetResponseHeaderName_InValid
+     * @param mixed $data
+     * @param mixed $expectedValue
+     */
+    public function testGetResponseHeaderNameInValid($data, $expectedValue)
+    {
+        $setHeaderElement = new SetHeaderElement();
+
+        $this->expectExceptionMessage(sprintf($expectedValue, $data));
+        $setHeaderElement->getResponseHeaderName($data);
     }
 }

@@ -24,83 +24,35 @@
 namespace fiftyone\pipeline\core;
 
 /**
-  * A PipelineBuilder generates a Pipeline object
-  * Before construction of the Pipeline, FlowElements are added to it
-  * There are also options for how JavaScript is output from the Pipeline
-*/
+ * A PipelineBuilder generates a Pipeline object
+ * Before construction of the Pipeline, FlowElements are added to it
+ * There are also options for how JavaScript is output from the Pipeline.
+ */
 class PipelineBuilder
 {
     public $pipelines;
     public $addJavaScriptBuilder;
-    public $javascriptBuilderSettings;
+    public $javascriptBuilderSettings = [];
     public $useSetHeaderProperties;
+    protected $flowElements = [];
+    protected $settings = [];
 
-    public function __construct($settings = array())
+    public function __construct($settings = [])
     {
-
         // List of Pipelines the FlowElement has been added to
         $this->pipelines = [];
 
-        if (isset($settings["addJavaScriptBuilder"])) {
-            $this->addJavaScriptBuilder = $settings["addJavaScriptBuilder"];
-        } else {
-            $this->addJavaScriptBuilder = true;
-        }
-      
-        if (isset($settings["javascriptBuilderSettings"])) {
-            $this->javascriptBuilderSettings = $settings["javascriptBuilderSettings"];
-        }
-
-        if (isset($settings["useSetHeaderProperties"])) {
-            $this->useSetHeaderProperties = $settings["useSetHeaderProperties"];
-        } else {
-            $this->useSetHeaderProperties = true;
-        }
-    }
-
-    private function getJavaScriptElements()
-    {
-        $flowElements = [];
-    
-        if ($this->addJavaScriptBuilder) {
-            // Add JavaScript elements
-    
-            $flowElements[] = new SequenceElement();
-            $flowElements[] = new JsonBundlerElement();
-    
-            if ($this->javascriptBuilderSettings !== null) {
-                $flowElements[] = new JavascriptBuilderElement($this->javascriptBuilderSettings);
-            } else {
-                $flowElements[] = new JavascriptBuilderElement([]);
-            }
-        }
-   
-        return $flowElements;
-    }
-
-    private function getSetHeaderElements()
-    {
-        $flowElements = [];
-    
-        if ($this->useSetHeaderProperties) {
-            
-            // Add SetHeader elements   
-            $flowElements[] = new SetHeaderElement();   
-        }
-   
-        return $flowElements;
+        $this->addJavaScriptBuilder = (bool) ($settings['addJavaScriptBuilder'] ?? true);
+        $this->javascriptBuilderSettings = $settings['javascriptBuilderSettings'] ?? [];
+        $this->useSetHeaderProperties = (bool) ($settings['useSetHeaderProperties'] ?? true);
     }
 
     /**
-     * array of FlowElements
-    **/
-    protected $flowElements = array();
-    protected $settings = array();
-
-    /**
-     * Add FlowElement to be used in Pipeline
-     * @param FlowElement
-    */
+     * Add FlowElement to be used in Pipeline.
+     *
+     * @param FlowElement $flowElement
+     * @return static
+     */
     public function add($flowElement)
     {
         $this->flowElements[] = $flowElement;
@@ -109,70 +61,108 @@ class PipelineBuilder
     }
 
     /**
-     * Build Pipeline once done
+     * Build Pipeline once done.
+     *
      * @return Pipeline
-    */
+     */
     public function build()
     {
-        $this->flowElements = array_merge($this->flowElements, 
-                                        $this->getJavaScriptElements(), 
-                                        $this->getSetHeaderElements());
+        $this->flowElements = array_merge(
+            $this->flowElements,
+            $this->getJavaScriptElements(),
+            $this->getSetHeaderElements()
+        );
 
         return new Pipeline($this->flowElements, $this->settings);
     }
 
     /**
-     * Add an instance of the logger class to the Pipeline
-     * @param Logger
-     * @return PipelineBuilder
-    */
+     * Add an instance of the logger class to the Pipeline.
+     *
+     * @param Logger $logger
+     * @return static
+     */
     public function addLogger($logger)
     {
-        $this->settings["logger"] = $logger;
+        $this->settings['logger'] = $logger;
 
         return $this;
     }
 
     /**
-    * Build from a JSON configuration file
-    * This JSON file should look like the following
-    * `{
-    * "PipelineOptions": {
-    * "Elements": [
-    *  {
-    *    "BuilderName": // Name of element as in use statement,
-    *    "BuildParameters": {
-    *      // An object of parameters passed to the constructor
-    *   }
-    *  }]
-    * }`
-    * @param string file name of the file to load config, or alternatively
-    * pass a config object already read from file
-    * @return Pipeline
-    */
+     * Build from a JSON configuration file
+     * This JSON file should have the following structure:
+     * `{
+     * "PipelineOptions": {
+     * "Elements": [
+     *  {
+     *    "BuilderName": // Name of element as in use statement,
+     *    "BuildParameters": {
+     *      // An object of parameters passed to the constructor
+     *   }
+     *  }]
+     * }`.
+     *
+     * @param array|string $fileOrConfig Filename of the config file to load config or associative array of config values
+     * @return Pipeline
+     */
     public function buildFromConfig($fileOrConfig)
     {
-        if (is_string($fileOrConfig))
-        {
+        if (is_string($fileOrConfig)) {
             $config = json_decode(file_get_contents($fileOrConfig), true);
-        }
-        else
-        {
+        } else {
             $config = $fileOrConfig;
         }
 
-        foreach ($config["PipelineOptions"]["Elements"] as $element) {
-            $builder = $element["BuilderName"];
+        foreach ($config['PipelineOptions']['Elements'] as $element) {
+            $builder = $element['BuilderName'];
 
-            if (isset($element["BuildParameters"])) {
-                $flowElement = new $builder($element["BuildParameters"]);
+            if (isset($element['BuildParameters'])) {
+                $flowElement = new $builder($element['BuildParameters']);
             } else {
                 $flowElement = new $builder();
             }
-            
+
             $this->flowElements[] = $flowElement;
         }
 
         return new Pipeline($this->flowElements, $this->settings);
+    }
+
+    /**
+     * @return FlowElement[]
+     */
+    private function getJavaScriptElements()
+    {
+        $flowElements = [];
+
+        if ($this->addJavaScriptBuilder) {
+            // Add JavaScript elements
+            $flowElements[] = new SequenceElement();
+            $flowElements[] = new JsonBundlerElement();
+
+            if ($this->javascriptBuilderSettings === null) {
+                $flowElements[] = new JavascriptBuilderElement([]);
+            } else {
+                $flowElements[] = new JavascriptBuilderElement($this->javascriptBuilderSettings);
+            }
+        }
+
+        return $flowElements;
+    }
+
+    /**
+     * @return FlowElement[]
+     */
+    private function getSetHeaderElements()
+    {
+        $flowElements = [];
+
+        if ($this->useSetHeaderProperties) {
+            // Add SetHeader elements
+            $flowElements[] = new SetHeaderElement();
+        }
+
+        return $flowElements;
     }
 }

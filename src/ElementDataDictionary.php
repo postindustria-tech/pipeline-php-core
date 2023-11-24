@@ -24,45 +24,48 @@
 namespace fiftyone\pipeline\core;
 
 /**
-* An extension of ElementData with dictionary object storage / lookup
-**/
+ * An extension of ElementData with dictionary object storage / lookup.
+ */
 class ElementDataDictionary extends ElementData
 {
     public $contents;
 
     /**
-    * Constructor for element data dictionary
-    * @param FlowElement
-    * @param mixed[] dicitonary contents
-    */
+     * Constructor for element data dictionary.
+     *
+     * @param FlowElement $flowElement
+     * @param array $contents Dictionary contents
+     */
     public function __construct($flowElement, $contents)
     {
         $this->contents = $contents;
 
         parent::__construct($flowElement);
     }
-    
+
     /**
-    * Get the values contained in the ElementData instance as a dictionary
-    * of keys and values.
-    * @return mixed[]
-    */
+     * Get the values contained in the ElementData instance as a dictionary
+     * of keys and values.
+     *
+     * @return array
+     */
     public function asDictionary()
     {
         return $this->contents;
     }
 
     /**
-    * Internal getter for contents
-    * @param string key
-    * @return mixed
-    */
+     * Internal getter for contents.
+     *
+     * @param string $key
+     * @return mixed
+     */
     public function getInternal($key)
     {
         if (isset($this->contents[$key])) {
             return $this->contents[$key];
-        } else {
-            return null;
         }
+
+        return null;
     }
 }

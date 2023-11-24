@@ -21,8 +21,6 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-
-
 namespace fiftyone\pipeline\core\tests\classes;
 
 use fiftyone\pipeline\core\Logger;
@@ -33,7 +31,7 @@ class MemoryLogger extends Logger
 
     public function logInternal($log)
     {
-        if ($log["message"] === "test") {
+        if ($log['message'] === 'test') {
             $this->log[] = $log;
         }
     }

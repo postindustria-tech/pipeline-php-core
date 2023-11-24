@@ -23,201 +23,186 @@
 
 namespace fiftyone\pipeline\core;
 
-use Exception;
-
 /**
- *  Set response headers element class. This is used to get response
- *  headers based on what the browser supports. For example, newer
- *  Chrome browsers support the Accept-CH header
+ * Set response headers element class. This is used to get response
+ * headers based on what the browser supports. For example, newer
+ * Chrome browsers support the Accept-CH header.
  */
-class SetHeaderElement extends FlowElement {
-
-    public $dataKey = "set-headers";
+class SetHeaderElement extends FlowElement
+{
+    public $dataKey = 'set-headers';
     private $setHeaderProperties = [];
 
     /**
-     *  Add the response header dictionary to the FlowData.
-     *  @param FlowData FlowData
+     * Add the response header dictionary to the FlowData.
+     *
+     * @param FlowData $flowData
      */
-    public function processInternal($flowData) {
+    public function processInternal($flowData)
+    {
+        if (empty($setHeaderProperties)) {
+            $this->setHeaderProperties = $this->getSetHeaderPropertiesPipeline($flowData->pipeline);
+        }
 
-        if(empty($setHeaderProperties)){
+        $responseHeaders = $this->getResponseHeaderValue($flowData, $this->setHeaderProperties);
 
-		    $this->setHeaderProperties = $this->getSetHeaderPropertiesPipeline($flowData->pipeline);
-	    }
-
-	    $responseHeaders = $this->getResponseHeaderValue($flowData, $this->setHeaderProperties);
-
-        $data = new ElementDataDictionary($this, ["responseheaderdictionary" => $responseHeaders]);
+        $data = new ElementDataDictionary($this, ['responseheaderdictionary' => $responseHeaders]);
 
         $flowData->setElementData($data);
-
-        return;
     }
 
-	/**
-     *  Get All the properties starting with SetHeader string from pipeline
-	 *  @param pipeline Pipeline
-	 *  @return A dictionary object containing SetHeader properties list against flowElement
+    /**
+     * Get All the properties starting with SetHeader string from pipeline.
+     *
+     * @param Pipeline $pipeline
+     * @return array A dictionary object containing SetHeader properties list against flowElement
      */
-    public function getSetHeaderPropertiesPipeline($pipeline) {
-		$setHeaderPropertiesDict = [];
+    public function getSetHeaderPropertiesPipeline($pipeline)
+    {
+        $setHeaderPropertiesDict = [];
 
-		// Loop over each flowElement in pipeline to check SetHeader properties
-		foreach ($pipeline->flowElements as $flowElement) {
+        // Loop over each flowElement in pipeline to check SetHeader properties
+        foreach ($pipeline->flowElements as $flowElement) {
+            // Get the properties against the flowElement
+            $properties = $flowElement->getProperties();
 
-			# Get the properties against the flowElement
-			$properties =  $flowElement->getProperties();
-
-			$setHeaderElementList = [];
+            $setHeaderElementList = [];
 
             // Loop over each flowElement property
-			foreach ($properties as $propertyKey => $propertyMeta) {
-				// Check if the property starts ith SetHeader
-				if(strpos($propertyKey, "setheader") !== false){ 
-					array_push($setHeaderElementList, $propertyMeta["name"]);
-				}
-			}
-			
-			// Add SetHeader element list in dict against flowElement.datakey as key
-		    if (count($setHeaderElementList)) {
-            $setHeaderPropertiesDict[$flowElement->dataKey] = $setHeaderElementList;
-		    }
-		}
+            foreach ($properties as $propertyKey => $propertyMeta) {
+                // Check if the property starts ith SetHeader
+                if (strpos($propertyKey, 'setheader') !== false) {
+                    $setHeaderElementList[] = $propertyMeta['name'];
+                }
+            }
 
-		return $setHeaderPropertiesDict;      
+            // Add SetHeader element list in dict against flowElement.datakey as key
+            if (count($setHeaderElementList)) {
+                $setHeaderPropertiesDict[$flowElement->dataKey] = $setHeaderElementList;
+            }
+        }
+
+        return $setHeaderPropertiesDict;
     }
-	
-	/**
-     *  Get response header value using set header properties from FlowData
-	 *  @param flowdata A processed FlowData object containing setheader properties
-	 *  @param setHeaderPropertiesDict A processed FlowData object containing setheader properties
-	 *  @return A dictionary object containing SetHeader properties list against flowElement
+
+    /**
+     * Get response header value using set header properties from FlowData.
+     *
+     * @param FlowData $flowData A processed FlowData object containing setheader properties
+     * @param array $setHeaderPropertiesDict A processed FlowData object containing setheader properties
+     * @return array A dictionary object containing SetHeader properties list against flowElement
      */
-    public function getResponseHeaderValue($flowData, $setHeaderPropertiesDict) {
-		$responseHeadersDict = [];
+    public function getResponseHeaderValue($flowData, $setHeaderPropertiesDict)
+    {
+        $responseHeadersDict = [];
 
         // Loop over all the flowElements to process Set Header properties for User Agent Client Hints
         foreach ($setHeaderPropertiesDict as $elementDataKey => $setHeaderElementList) {
-
-			// Loop over each setHeader property of the element  
-			foreach ($setHeaderElementList as $setHeaderProperty) {
-
+            // Loop over each setHeader property of the element
+            foreach ($setHeaderElementList as $setHeaderProperty) {
                 // Get response header key to be set in response
                 $responseHeader = $this->getResponseHeaderName($setHeaderProperty);
 
                 // Get SetHeader property value from elementData
                 $setHeaderValue = $this->getPropertyValue($flowData, $elementDataKey, $setHeaderProperty);
 
-				if (isset($responseHeadersDict[$responseHeader])) {
-				    $responseHeaderValue = $responseHeadersDict[$responseHeader];
-					if($responseHeaderValue == ""){
-						$responseHeaderValue = $setHeaderValue;
-					}
-                    else{
-						if($setHeaderValue != ""){
-							$responseHeaderValue = $responseHeaderValue . "," . $setHeaderValue;
-						}
-					}
-					$responseHeadersDict[$responseHeader] = $responseHeaderValue;
-		        }
-				else {
-					$responseHeadersDict[$responseHeader] = $setHeaderValue;
-				}
-			}
-		}
-		return $responseHeadersDict;
+                if (isset($responseHeadersDict[$responseHeader])) {
+                    $responseHeaderValue = $responseHeadersDict[$responseHeader];
+                    if ($responseHeaderValue == '') {
+                        $responseHeaderValue = $setHeaderValue;
+                    } else {
+                        if ($setHeaderValue != '') {
+                            $responseHeaderValue = $responseHeaderValue . ',' . $setHeaderValue;
+                        }
+                    }
+                    $responseHeadersDict[$responseHeader] = $responseHeaderValue;
+                } else {
+                    $responseHeadersDict[$responseHeader] = $setHeaderValue;
+                }
+            }
+        }
+
+        return $responseHeadersDict;
     }
 
-	/**
-     *  Try to get the value for the given element and property.
-	 *  If the value cannot be found or is null/unknown, then ""
-	 *  will be returned.
-	 *  @param flowData A processed FlowData instance to get the value from.
-	 *  @param elementKey Key for the element data to get the value from
-	 *  @param propertyKey Name of the property to get the value for.
-	 *  @return value or empty string
+    /**
+     * Try to get the value for the given element and property.
+     * If the value cannot be found or is null/unknown, then an empty string will be returned.
+     *
+     * @param FlowData $flowData A processed FlowData instance to get the value from
+     * @param string $elementKey Key for the element data to get the value from
+     * @param string $propertyKey name of the property to get the value for
+     * @return string
      */
-    public function getPropertyValue($flowData, $elementKey, $propertyKey){
-
-        $value = "";
-
-        if($flowData->$elementKey) {
+    public function getPropertyValue($flowData, $elementKey, $propertyKey)
+    {
+        if ($flowData->{$elementKey}) {
             // Get the elementData from flowData that contains required property.
-            $elementData = $flowData->$elementKey;
-		}
-        else{
-			echo sprintf(Messages::ELEMENT_NOT_FOUND, $elementKey);
-			return "";
-		}
+            $elementData = $flowData->{$elementKey};
+        } else {
+            echo sprintf(Messages::ELEMENT_NOT_FOUND, $elementKey);
 
-		$propertyKey = strtolower($propertyKey);
-		// TODO: catch is never called here. Consider replacing it with:
-		// if (isset($elementData->$propertyKey))
-		// The change can't be made right now, as it causes device-detection-php
-		// tests to fail. Further investigation is needed.
-		try {
-            $property = $elementData->$propertyKey;
-		} catch (Exception $e) {
-			echo sprintf(Messages::PROPERTY_NOT_FOUND, $propertyKey, $elementKey);
-			return "";
-		}
+            return '';
+        }
 
-		if($property && $property->hasValue && !in_array($property->value, ["Unknown", "noValue"])){
-			$value = $property->value;
-		}
-        else{
-			$value = "";
-		}
-        return $value;
+        $propertyKey = strtolower($propertyKey);
+
+        // TODO: catch is never called here. Consider replacing it with:
+        // if (isset($elementData->$propertyKey))
+        // The change can't be made right now, as it causes device-detection-php
+        // tests to fail. Further investigation is needed.
+        try {
+            $property = $elementData->{$propertyKey};
+        } catch (\Exception $e) {
+            echo sprintf(Messages::PROPERTY_NOT_FOUND, $propertyKey, $elementKey);
+
+            return '';
+        }
+
+        if ($property && $property->hasValue && !in_array($property->value, ['Unknown', 'noValue'])) {
+            return $property->value;
+        }
+
+        return '';
     }
 
-	/**
-     *  Determines which response header the property value will be appended to by
-	 *  stripping the 'SetHeader' string and the 'Component Name' from the property name.
-	 *  @param propertyKey Key for SetHeaderAcceptCH property
-	 *  @return Response Header name
+    /**
+     * Determines which response header the property value will be appended to by
+     * stripping the 'SetHeader' string and the 'Component Name' from the property name.
+     *
+     * @param string $propertyKey Key for SetHeaderAcceptCH property
+     * @return string Response Header name
+     * @throws \Exception
      */
-    public function getResponseHeaderName($propertyKey) {
+    public function getResponseHeaderName($propertyKey)
+    {
+        $actualPropertyName = $propertyKey;
 
-		$actualPropertyName = $propertyKey;
-		$responseHeader = "";
+        // Check if property name starts with SetHeader.
+        // If Yes, Discard SetHeader from property name.
+        if (strcmp(substr($propertyKey, 0, 9), 'SetHeader') !== 0) {
+            throw new \Exception(sprintf(Messages::PROPERTY_NOT_SET_HEADER, $actualPropertyName));
+        }
 
-		// Check if property name starts with SetHeader.
-		// If Yes, Discard SetHeader from property name.
-		if(strcmp(substr($propertyKey, 0, 9), "SetHeader") !== 0){
-            throw new Exception(sprintf(
-				Messages::PROPERTY_NOT_SET_HEADER,
-				$actualPropertyName));
-		}
-		else{
-		    $propertyKey = str_replace("SetHeader", "", $propertyKey);
-		}
+        $propertyKey = str_replace('SetHeader', '', $propertyKey);
 
-		// Check if the first letter of Component name is in Uppercase
-		// If Yes, Split the propertyKey based on Uppercase letters
-		if(ctype_upper(substr($propertyKey, 0,1)) == FALSE){
-			throw new Exception(sprintf(
-				Messages::WRONG_PROPERTY_FORMAT,
-				$actualPropertyName));
-		}
-		else{
-		    $parts = preg_split('/(?=[A-Z][^A-Z]*)/', $propertyKey, -1, PREG_SPLIT_NO_EMPTY);
+        // Check if the first letter of Component name is in Uppercase
+        // If Yes, Split the propertyKey based on Uppercase letters
+        if (ctype_upper(substr($propertyKey, 0, 1)) === false) {
+            throw new \Exception(sprintf(Messages::WRONG_PROPERTY_FORMAT, $actualPropertyName));
+        }
 
-		    // Get the Component name string to be removed from the key		
-		    $discardLetter = $parts[0];
-		}
+        $parts = preg_split('/(?=[A-Z][^A-Z]*)/', $propertyKey, -1, PREG_SPLIT_NO_EMPTY);
 
-		// Check if property name contains the header name that starts with upper case
-		// If Yes, Remove the previously found Component Name to get the Header Name
-	    if (count($parts) <= 1){
-			throw new Exception(sprintf(
-				Messages::WRONG_PROPERTY_FORMAT,
-				$actualPropertyName));		}
-		else{
-			$responseHeader = str_replace($discardLetter, "", $propertyKey);
-		}
+        // Get the Component name string to be removed from the key
+        $discardLetter = $parts[0];
 
-	return $responseHeader;
+        // Check if property name contains the header name that starts with upper case
+        // If Yes, Remove the previously found Component Name to get the Header Name
+        if (count($parts) <= 1) {
+            throw new \Exception(sprintf(Messages::WRONG_PROPERTY_FORMAT, $actualPropertyName));
+        }
+
+        return str_replace($discardLetter, '', $propertyKey);
     }
 }
