@@ -171,7 +171,10 @@ class JavascriptBuilderElement extends FlowElement
 
         $vars['_parameters'] = json_encode($jsParams);
 
-        $output = (new \Mustache_Engine())->render(file_get_contents($this->getTemplatePath()), $vars);
+        $output = (new \Mustache_Engine())->render(
+            file_get_contents(__DIR__ . '/../javascript-templates/JavaScriptResource.mustache'),
+            $vars
+        );
 
         if ($this->minify) {
             // Minify the output
@@ -181,24 +184,5 @@ class JavascriptBuilderElement extends FlowElement
         $data = new ElementDataDictionary($this, ['javascript' => $output]);
 
         $flowData->setElementData($data);
-    }
-
-    /**
-     * @return string
-     * @throws \Exception
-     */
-    private function getTemplatePath()
-    {
-        $templatePath = '51degrees/fiftyone.pipeline.javascript-templates/JavaScriptResource.mustache';
-        $prefixes = ['/../../../', '/../vendor/'];
-
-        foreach ($prefixes as $prefix) {
-            $path = __DIR__ . $prefix . $templatePath;
-            if (file_exists($path)) {
-                return $path;
-            }
-        }
-
-        throw new \Exception('Could not find JavaScriptResource template');
     }
 }
