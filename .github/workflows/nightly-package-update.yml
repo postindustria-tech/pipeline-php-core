@@ -1,4 +1,4 @@
-name: Nightly Publish Main
+name: Nightly Package Update
 
 on:
   workflow_dispatch:
@@ -7,17 +7,15 @@ on:
         default: false
         type: boolean
         description: Dry Run
-  workflow_run:
-    workflows: [Nightly PRs to Main]
-    types: [completed]
+  schedule:
+    - cron: '0 1 * * *'
 
 jobs:
-  Nightly_Publish_Main:
-    uses: 51Degrees/common-ci/.github/workflows/nightly-publish-main.yml@main
+  Nightly_Package_Update:
+    uses: 51Degrees/common-ci/.github/workflows/nightly-package-update.yml@main
     with:
       repo-name: ${{ github.event.repository.name }}
       org-name: ${{ github.event.repository.owner.login }}
       dryrun: ${{ inputs.dryrun || false }}
-      build-platform: ubuntu-latest
     secrets:
       token: ${{ secrets.ACCESS_TOKEN }}
