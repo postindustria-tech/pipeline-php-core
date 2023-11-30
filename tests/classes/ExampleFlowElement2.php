@@ -29,22 +29,22 @@ use fiftyone\pipeline\core\FlowElement;
 
 class ExampleFlowElement2 extends FlowElement
 {
-    public $dataKey = 'example2';
+    public string $dataKey = 'example2';
 
-    public $properties = [
+    public array $properties = [
         'integer2' => [
             'type' => 'int'
         ]
     ];
 
-    public function processInternal($flowData)
+    public function processInternal($flowData): void
     {
         $data = new ElementDataDictionary($this, ['integer' => 7]);
 
         $flowData->setElementData($data);
     }
 
-    public function getEvidenceKeyFilter()
+    public function getEvidenceKeyFilter(): BasicListEvidenceKeyFilter
     {
         return new BasicListEvidenceKeyFilter(['header.user-agent']);
     }

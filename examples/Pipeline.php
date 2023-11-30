@@ -49,7 +49,7 @@ class ArrayLogger extends Logger
 {
     public $log = [];
 
-    public function logInternal($log)
+    public function logInternal(array $log): void
     {
         if ($log['message'] === 'test') {
             $this->log[] = $log;

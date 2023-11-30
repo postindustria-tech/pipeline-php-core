@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -28,33 +30,40 @@ namespace fiftyone\pipeline\core;
  */
 class Logger
 {
-    public $settings;
-    private $minLevel;
-    private $levels = ['trace', 'debug', 'information', 'warning', 'error', 'critical'];
+    /**
+     * @var array<string, mixed>
+     */
+    public array $settings;
+
+    private int $minLevel;
+
+    /**
+     * @var array<string>
+     */
+    private array $levels = ['trace', 'debug', 'info', 'warning', 'error', 'critical'];
 
     /**
      * Create a logger.
      *
-     * @param string $level Values: 'trace', 'debug', 'information', 'warning', 'error', 'critical'
-     * @param array $settings Custom settings for a logger
+     * @param null|string $level Values: 'trace', 'debug', 'info', 'warning', 'error', 'critical'
+     * @param array<string, mixed> $settings Custom settings for a logger
      */
-    public function __construct($level, $settings = [])
+    public function __construct(?string $level, array $settings = [])
     {
-        if (!$level) {
+        $level = strtolower((string) $level);
+
+        if (!in_array($level, $this->levels)) {
             $level = 'error';
         }
 
         $this->settings = $settings;
-        $this->minLevel = array_search(strtolower($level), $this->levels);
+        $this->minLevel = array_search($level, $this->levels);
     }
 
     /**
      * Log a message.
-     *
-     * @param string $level
-     * @param string $message
      */
-    public function log($level, $message)
+    public function log(string $level, string $message): void
     {
         $levelIndex = array_search(strtolower($level), $this->levels);
 
@@ -72,11 +81,10 @@ class Logger
     /**
      * Internal logging function overridden by specific loggers.
      *
-     * @param array $log
-     * @return array
+     * @param array<string, string> $log
      */
-    public function logInternal($log)
+    public function logInternal(array $log): void
     {
-        return $log;
+        return;
     }
 }

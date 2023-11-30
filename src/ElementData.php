@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -29,19 +31,17 @@ namespace fiftyone\pipeline\core;
  */
 class ElementData
 {
-    public $flowElement;
+    public FlowElement $flowElement;
 
-    /**
-     * Constructor for element data.
-     *
-     * @param FlowElement $flowElement
-     */
-    public function __construct($flowElement)
+    public function __construct(FlowElement $flowElement)
     {
         $this->flowElement = $flowElement;
     }
 
-    public function __get($key)
+    /**
+     * @return mixed
+     */
+    public function __get(string $key)
     {
         return $this->get($key);
     }
@@ -53,7 +53,7 @@ class ElementData
      * @param string $key Property name
      * @return mixed
      */
-    public function get($key)
+    public function get(string $key)
     {
         return $this->getInternal($key);
     }
@@ -62,42 +62,33 @@ class ElementData
      * Get the values contained in the ElementData instance as a dictionary
      * of keys and values.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function asDictionary()
+    public function asDictionary(): array
     {
-        return;
+        return [];
     }
 
     /**
      * Helper method to get property as a string.
-     *
-     * @param string $key Property name
-     * @return string
      */
-    public function getAsString($key)
+    public function getAsString(string $key): string
     {
         return strval($this->get($key));
     }
 
     /**
      * Helper method to get property as a float.
-     *
-     * @param string $key
-     * @return float
      */
-    public function getAsFloat($key)
+    public function getAsFloat(string $key): float
     {
         return floatval($this->get($key));
     }
 
     /**
-     * Helper method to get property as a int.
-     *
-     * @param string $key Property name
-     * @return int
+     * Helper method to get property as an int.
      */
-    public function getAsInteger($key)
+    public function getAsInteger(string $key): int
     {
         return intval($this->get($key));
     }
@@ -109,7 +100,7 @@ class ElementData
      * @param string $key Property name
      * @return mixed
      */
-    protected function getInternal($key)
+    protected function getInternal(string $key)
     {
         return;
     }

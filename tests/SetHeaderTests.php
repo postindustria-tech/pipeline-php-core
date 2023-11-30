@@ -24,10 +24,10 @@
 namespace fiftyone\pipeline\core\tests;
 
 use fiftyone\pipeline\core\AspectPropertyValue;
-use fiftyone\pipeline\core\ElementDataDictionary;
 use fiftyone\pipeline\core\Messages;
 use fiftyone\pipeline\core\SetHeaderElement;
 use fiftyone\pipeline\core\tests\classes\Constants;
+use fiftyone\pipeline\core\tests\classes\TestDataDictionary;
 use fiftyone\pipeline\core\tests\classes\TestPipeline;
 use fiftyone\pipeline\core\Utils;
 use PHPUnit\Framework\TestCase;
@@ -40,7 +40,7 @@ class SetHeaderTests extends TestCase
         return [
             [
                 [
-                    'device' => new ElementDataDictionary(null, [
+                    'device' => new TestDataDictionary(null, [
                         'setheaderbrowseraccept-ch' => new AspectPropertyValue(null, Constants::UNKNOWN),
                         'setheaderplatformaccept-ch' => new AspectPropertyValue(null, Constants::UNKNOWN),
                         'setheaderhardwareaccept-ch' => new AspectPropertyValue(null, Constants::UNKNOWN)
@@ -50,7 +50,7 @@ class SetHeaderTests extends TestCase
             ],
             [
                 [
-                    'device' => new ElementDataDictionary(null, [
+                    'device' => new TestDataDictionary(null, [
                         'setheaderbrowseraccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE)
                     ])
                 ],
@@ -58,7 +58,7 @@ class SetHeaderTests extends TestCase
             ],
             [
                 [
-                    'device' => new ElementDataDictionary(null, [
+                    'device' => new TestDataDictionary(null, [
                         'setheaderplatformaccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE),
                         'setheaderhardwareaccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE)
                     ])
@@ -67,7 +67,7 @@ class SetHeaderTests extends TestCase
             ],
             [
                 [
-                    'device' => new ElementDataDictionary(null, [
+                    'device' => new TestDataDictionary(null, [
                         'setheaderbrowseraccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_BROWSER_VALUE),
                         'setheaderplatformaccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_PLATFORM_VALUE),
                         'setheaderhardwareaccept-ch' => new AspectPropertyValue(null, Constants::ACCEPTCH_HARDWARE_VALUE)

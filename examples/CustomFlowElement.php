@@ -34,6 +34,9 @@
  *
  */
 
+// Uncomment the line below when running the example as a standalone script
+// require_once __DIR__ . '/../vendor/autoload.php';
+
 use fiftyone\pipeline\core\BasicListEvidenceKeyFilter;
 use fiftyone\pipeline\core\ElementDataDictionary;
 use fiftyone\pipeline\core\FlowElement;
@@ -84,9 +87,9 @@ class AstrologyFlowElement extends FlowElement
 {
     // datakey used to categorise data coming back from this
     // FlowElement in a Pipeline
-    public $dataKey = 'astrology';
+    public string $dataKey = 'astrology';
 
-    public $properties = [
+    public array $properties = [
         'starSign' => [
             'type' => 'string',
             'description' => "the user's starsign"
@@ -103,7 +106,7 @@ class AstrologyFlowElement extends FlowElement
 
     // The processInternal function is the core working of a FlowElement.
     // It takes FlowData, reads evidence and returns data.
-    public function processInternal($flowData)
+    public function processInternal($flowData): void
     {
         $result = [];
 
@@ -140,7 +143,7 @@ class AstrologyFlowElement extends FlowElement
         $flowData->setElementData($data);
     }
 
-    public function getEvidenceKeyFilter()
+    public function getEvidenceKeyFilter(): BasicListEvidenceKeyFilter
     {
         // A filter (in this case a basic list) stating which evidence
         // the FlowElement is interested in

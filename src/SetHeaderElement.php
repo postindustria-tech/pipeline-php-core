@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -30,17 +32,19 @@ namespace fiftyone\pipeline\core;
  */
 class SetHeaderElement extends FlowElement
 {
-    public $dataKey = 'set-headers';
-    private $setHeaderProperties = [];
+    public string $dataKey = 'set-headers';
+
+    /**
+     * @var array<string, array<int, mixed>>
+     */
+    private array $setHeaderProperties = [];
 
     /**
      * Add the response header dictionary to the FlowData.
-     *
-     * @param FlowData $flowData
      */
-    public function processInternal($flowData)
+    public function processInternal(FlowData $flowData): void
     {
-        if (empty($setHeaderProperties)) {
+        if (empty($this->setHeaderProperties)) {
             $this->setHeaderProperties = $this->getSetHeaderPropertiesPipeline($flowData->pipeline);
         }
 
@@ -54,10 +58,9 @@ class SetHeaderElement extends FlowElement
     /**
      * Get All the properties starting with SetHeader string from pipeline.
      *
-     * @param Pipeline $pipeline
-     * @return array A dictionary object containing SetHeader properties list against flowElement
+     * @return array<string, array<int, mixed>> A dictionary object containing SetHeader properties list against flowElement
      */
-    public function getSetHeaderPropertiesPipeline($pipeline)
+    public function getSetHeaderPropertiesPipeline(Pipeline $pipeline): array
     {
         $setHeaderPropertiesDict = [];
 
@@ -88,11 +91,11 @@ class SetHeaderElement extends FlowElement
     /**
      * Get response header value using set header properties from FlowData.
      *
-     * @param FlowData $flowData A processed FlowData object containing setheader properties
-     * @param array $setHeaderPropertiesDict A processed FlowData object containing setheader properties
-     * @return array A dictionary object containing SetHeader properties list against flowElement
+     * @param \fiftyone\pipeline\core\FlowData $flowData A processed FlowData object containing setheader properties
+     * @param array<string, array<int, mixed>> $setHeaderPropertiesDict A processed FlowData object containing setheader properties
+     * @return array<string, string> A dictionary object containing SetHeader properties list against flowElement
      */
-    public function getResponseHeaderValue($flowData, $setHeaderPropertiesDict)
+    public function getResponseHeaderValue(FlowData $flowData, array $setHeaderPropertiesDict): array
     {
         $responseHeadersDict = [];
 
@@ -129,12 +132,11 @@ class SetHeaderElement extends FlowElement
      * Try to get the value for the given element and property.
      * If the value cannot be found or is null/unknown, then an empty string will be returned.
      *
-     * @param FlowData $flowData A processed FlowData instance to get the value from
+     * @param \fiftyone\pipeline\core\FlowData $flowData A processed FlowData instance to get the value from
      * @param string $elementKey Key for the element data to get the value from
      * @param string $propertyKey name of the property to get the value for
-     * @return string
      */
-    public function getPropertyValue($flowData, $elementKey, $propertyKey)
+    public function getPropertyValue(FlowData $flowData, string $elementKey, string $propertyKey): string
     {
         if ($flowData->{$elementKey}) {
             // Get the elementData from flowData that contains required property.
@@ -146,18 +148,8 @@ class SetHeaderElement extends FlowElement
         }
 
         $propertyKey = strtolower($propertyKey);
-
-        // TODO: catch is never called here. Consider replacing it with:
-        // if (isset($elementData->$propertyKey))
-        // The change can't be made right now, as it causes device-detection-php
-        // tests to fail. Further investigation is needed.
-        try {
-            $property = $elementData->{$propertyKey};
-        } catch (\Exception $e) {
-            echo sprintf(Messages::PROPERTY_NOT_FOUND, $propertyKey, $elementKey);
-
-            return '';
-        }
+        /** @phpstan-var null|\fiftyone\pipeline\core\AspectPropertyValue $property */
+        $property = $elementData->{$propertyKey};
 
         if ($property && $property->hasValue && !in_array($property->value, ['Unknown', 'noValue'])) {
             return $property->value;
@@ -171,10 +163,10 @@ class SetHeaderElement extends FlowElement
      * stripping the 'SetHeader' string and the 'Component Name' from the property name.
      *
      * @param string $propertyKey Key for SetHeaderAcceptCH property
-     * @return string Response Header name
+     * @return string Response header name
      * @throws \Exception
      */
-    public function getResponseHeaderName($propertyKey)
+    public function getResponseHeaderName(string $propertyKey): string
     {
         $actualPropertyName = $propertyKey;
 
@@ -192,6 +184,7 @@ class SetHeaderElement extends FlowElement
             throw new \Exception(sprintf(Messages::WRONG_PROPERTY_FORMAT, $actualPropertyName));
         }
 
+        /** @phpstan-var array<string> $parts */
         $parts = preg_split('/(?=[A-Z][^A-Z]*)/', $propertyKey, -1, PREG_SPLIT_NO_EMPTY);
 
         // Get the Component name string to be removed from the key

@@ -28,14 +28,14 @@ use fiftyone\pipeline\core\FlowElement;
 
 class StopFlowData extends FlowElement
 {
-    public $dataKey = 'stop';
+    public string $dataKey = 'stop';
 
-    public function processInternal($flowData)
+    public function processInternal($flowData): void
     {
         $flowData->stop();
     }
 
-    public function getEvidenceKeyFilter()
+    public function getEvidenceKeyFilter(): BasicListEvidenceKeyFilter
     {
         return new BasicListEvidenceKeyFilter(['header.user-agent']);
     }

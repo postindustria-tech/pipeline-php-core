@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -30,14 +32,32 @@ namespace fiftyone\pipeline\core;
  */
 class PipelineBuilder
 {
-    public $pipelines;
-    public $addJavaScriptBuilder;
-    public $javascriptBuilderSettings = [];
-    public $useSetHeaderProperties;
-    protected $flowElements = [];
-    protected $settings = [];
+    /**
+     * @var array<\fiftyone\pipeline\core\Pipeline>
+     */
+    public array $pipelines;
+    public bool $addJavaScriptBuilder;
 
-    public function __construct($settings = [])
+    /**
+     * @var array<string, mixed>
+     */
+    public array $javascriptBuilderSettings = [];
+    public bool $useSetHeaderProperties;
+
+    /**
+     * @var array<\fiftyone\pipeline\core\FlowElement>
+     */
+    protected array $flowElements = [];
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected array $settings = [];
+
+    /**
+     * @param array<string, mixed> $settings
+     */
+    public function __construct(array $settings = [])
     {
         // List of Pipelines the FlowElement has been added to
         $this->pipelines = [];
@@ -50,10 +70,9 @@ class PipelineBuilder
     /**
      * Add FlowElement to be used in Pipeline.
      *
-     * @param FlowElement $flowElement
      * @return static
      */
-    public function add($flowElement)
+    public function add(FlowElement $flowElement): PipelineBuilder
     {
         $this->flowElements[] = $flowElement;
 
@@ -62,10 +81,8 @@ class PipelineBuilder
 
     /**
      * Build Pipeline once done.
-     *
-     * @return Pipeline
      */
-    public function build()
+    public function build(): Pipeline
     {
         $this->flowElements = array_merge(
             $this->flowElements,
@@ -79,10 +96,9 @@ class PipelineBuilder
     /**
      * Add an instance of the logger class to the Pipeline.
      *
-     * @param Logger $logger
      * @return static
      */
-    public function addLogger($logger)
+    public function addLogger(Logger $logger): PipelineBuilder
     {
         $this->settings['logger'] = $logger;
 
@@ -103,10 +119,9 @@ class PipelineBuilder
      *  }]
      * }`.
      *
-     * @param array|string $fileOrConfig Filename of the config file to load config or associative array of config values
-     * @return Pipeline
+     * @param array<string, mixed>|string $fileOrConfig Filename of the config file to load config or associative array of config values
      */
-    public function buildFromConfig($fileOrConfig)
+    public function buildFromConfig($fileOrConfig): Pipeline
     {
         if (is_string($fileOrConfig)) {
             $config = json_decode(file_get_contents($fileOrConfig), true);
@@ -115,6 +130,7 @@ class PipelineBuilder
         }
 
         foreach ($config['PipelineOptions']['Elements'] as $element) {
+            /** @phpstan-var \fiftyone\pipeline\core\FlowElement $builder */
             $builder = $element['BuilderName'];
 
             if (isset($element['BuildParameters'])) {
@@ -130,9 +146,9 @@ class PipelineBuilder
     }
 
     /**
-     * @return FlowElement[]
+     * @return array<\fiftyone\pipeline\core\FlowElement>
      */
-    private function getJavaScriptElements()
+    private function getJavaScriptElements(): array
     {
         $flowElements = [];
 
@@ -140,21 +156,16 @@ class PipelineBuilder
             // Add JavaScript elements
             $flowElements[] = new SequenceElement();
             $flowElements[] = new JsonBundlerElement();
-
-            if ($this->javascriptBuilderSettings === null) {
-                $flowElements[] = new JavascriptBuilderElement([]);
-            } else {
-                $flowElements[] = new JavascriptBuilderElement($this->javascriptBuilderSettings);
-            }
+            $flowElements[] = new JavascriptBuilderElement($this->javascriptBuilderSettings);
         }
 
         return $flowElements;
     }
 
     /**
-     * @return FlowElement[]
+     * @return array<\fiftyone\pipeline\core\FlowElement>
      */
-    private function getSetHeaderElements()
+    private function getSetHeaderElements(): array
     {
         $flowElements = [];
 

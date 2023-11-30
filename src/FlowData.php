@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -28,35 +30,41 @@ namespace fiftyone\pipeline\core;
  * It collects evidence set by the user
  * It passes evidence to FlowElements in the Pipeline
  * These elements can return ElementData or populate an errors object.
+ *
+ * @property \fiftyone\pipeline\core\JsonBundlerElement $jsonbundler
  */
 class FlowData
 {
-    public $pipeline;
-    public $stopped = false;
-    public $evidence;
-    public $data;
-    public $processed;
-    public $errors = [];
+    public Pipeline $pipeline;
+    public bool $stopped = false;
+    public Evidence $evidence;
+
+    /**
+     * @var array<string, \fiftyone\pipeline\core\ElementData>
+     */
+    public array $data = [];
+    public bool $processed = false;
+
+    /**
+     * @var array<string, \Throwable>
+     */
+    public array $errors = [];
 
     /**
      * Constructor for FlowData.
      *
-     * @param Pipeline $pipeline Parent Pipeline
+     * @param \fiftyone\pipeline\core\Pipeline $pipeline Parent Pipeline
      */
-    public function __construct($pipeline)
+    public function __construct(Pipeline $pipeline)
     {
         $this->pipeline = $pipeline;
-
         $this->evidence = new Evidence($this);
     }
 
     /**
      * Magic getter to allow $FlowData->FlowElementKey getting.
-     *
-     * @param string $flowElementKey
-     * @return ElementData
      */
-    public function __get($flowElementKey)
+    public function __get(string $flowElementKey): ElementData
     {
         return $this->get($flowElementKey);
     }
@@ -65,9 +73,10 @@ class FlowData
      * process function runs the process function on every attached FlowElement
      * allowing data to be changed based on evidence
      * This can only be run once per FlowData instance.
-     * @return FlowData
+     *
+     * @return static
      */
-    public function process()
+    public function process(): FlowData
     {
         if (!$this->processed) {
             foreach ($this->pipeline->flowElements as $flowElement) {
@@ -79,14 +88,11 @@ class FlowData
                         $flowElement->process($this);
                     } catch (\Throwable $e) {
                         $this->setError($flowElement->dataKey, $e);
-                    } catch (\Exception $e) {
-                        $this->setError($flowElement->dataKey, $e);
                     }
                 }
             }
 
             // Set processed flag to true. FlowData can only be processed once
-
             $this->processed = true;
         } else {
             $this->setError('global', new \Exception(Messages::FLOW_DATA_PROCESSED));
@@ -103,11 +109,8 @@ class FlowData
 
     /**
      * Retrieve data by FlowElement object.
-     *
-     * @param FlowElement $flowElement
-     * @return ElementData
      */
-    public function getFromElement($flowElement)
+    public function getFromElement(FlowElement $flowElement): ElementData
     {
         return $this->get($flowElement->dataKey);
     }
@@ -115,16 +118,10 @@ class FlowData
     /**
      * Retrieve data by FlowElement key.
      *
-     * @param string $flowElementKey
-     * @return ElementData
      * @throws \Exception
      */
-    public function get($flowElementKey)
+    public function get(string $flowElementKey): ElementData
     {
-        if ($this->data === null) {
-            throw new \Exception(sprintf(Messages::NO_ELEMENT_DATA_NULL, $flowElementKey));
-        }
-
         if (!isset($this->data[$flowElementKey])) {
             throw new \Exception(sprintf(Messages::NO_ELEMENT_DATA, $flowElementKey, join(',', array_keys($this->data))));
         }
@@ -134,28 +131,23 @@ class FlowData
 
     /**
      * Set data (used by FlowElement).
-     *
-     * @param ElementData $data
      */
-    public function setElementData($data)
+    public function setElementData(ElementData $data): void
     {
         $this->data[$data->flowElement->dataKey] = $data;
     }
 
     /**
      * Set error (should be keyed by FlowElement dataKey).
-     *
-     * @param string $key
-     * @param \Exception $error
      */
-    public function setError($key, $error)
+    public function setError(string $key, \Throwable $error): void
     {
         $this->errors[$key] = $error;
 
         $logMessage = 'Error occurred during processing';
 
         if (!empty($key)) {
-            $logMessage = $logMessage . ' of ' . $key . ". \n" . $error;
+            $logMessage = $logMessage . ' of ' . $key . ". \n" . $error->getMessage();
         }
 
         $this->pipeline->log('error', $logMessage);
@@ -165,12 +157,11 @@ class FlowData
      * Get an array evidence stored in the FlowData, filtered by
      * its FlowElements' EvidenceKeyFilters.
      *
-     * @return array
+     * @return array<string, int|string>
      */
-    public function getEvidenceDataKey()
+    public function getEvidenceDataKey(): array
     {
         $requestedEvidence = [];
-        $evidence = $this->evidence->getAll();
 
         foreach ($this->pipeline->flowElements as $flowElement) {
             $requestedEvidence = array_merge($requestedEvidence, $flowElement->filterEvidence($this));
@@ -182,7 +173,7 @@ class FlowData
     /**
      * Stop processing any subsequent FlowElements.
      */
-    public function stop()
+    public function stop(): void
     {
         $this->stopped = true;
     }
@@ -190,11 +181,10 @@ class FlowData
     /**
      * Get data from FlowElement based on property metadata.
      *
-     * @param string $metaKey
      * @param mixed $metaValue
-     * @return array
+     * @return array<string, mixed>
      */
-    public function getWhere($metaKey, $metaValue)
+    public function getWhere(string $metaKey, $metaValue): array
     {
         $metaKey = strtolower($metaKey);
         $metaValue = strtolower($metaValue);
@@ -210,17 +200,10 @@ class FlowData
         $output = [];
 
         foreach ($keys as $key => $flowElement) {
-            // First check if FlowElement has any data set
-            if (isset($this->data[$flowElement])) {
-                $data = $this->get($flowElement);
-
-                if ($data) {
-                    try {
-                        $output[$key] = $data->get($key);
-                    } catch (\Exception $e) {
-                        continue;
-                    }
-                }
+            try {
+                $output[$key] = $this->get($flowElement)->get($key);
+            } catch (\Throwable $e) {
+                continue;
             }
         }
 

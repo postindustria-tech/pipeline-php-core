@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -31,20 +33,33 @@ namespace fiftyone\pipeline\core;
  */
 class Pipeline
 {
-    public $flowElements;
-    public $flowElementsList = [];
-    public $logger;
+    /**
+     * @var array<\fiftyone\pipeline\core\FlowElement>
+     */
+    public array $flowElements;
+
+    /**
+     * @var array<string, \fiftyone\pipeline\core\FlowElement>
+     */
+    public array $flowElementsList = [];
+    public Logger $logger;
+
+    /** @phpstan-ignore-next-line */
     public $metaDataStore;
-    public $suppressProcessExceptions;
-    public $propertyDatabase;
+    public bool $suppressProcessExceptions;
+
+    /**
+     * @var array<string, array<string, array<string, array<string, string>>>>
+     */
+    public array $propertyDatabase;
 
     /**
      * Pipeline constructor.
      *
-     * @param FlowElement[] $flowElements List of FlowElements
-     * @param array $settings
+     * @param array<\fiftyone\pipeline\core\FlowElement> $flowElements List of FlowElements
+     * @param array<string, mixed> $settings
      */
-    public function __construct($flowElements, $settings)
+    public function __construct(array $flowElements, array $settings)
     {
         $this->logger = $settings['logger'] ?? new Logger(null);
 
@@ -72,40 +87,29 @@ class Pipeline
 
     /**
      * Create a FlowData based on what's in the Pipeline.
-     *
-     * @return FlowData
      */
-    public function createFlowData()
+    public function createFlowData(): FlowData
     {
         return new FlowData($this);
     }
 
-    /**
-     * @param string $level
-     * @param string $message
-     */
-    public function log($level, $message)
+    public function log(string $level, string $message): void
     {
         $this->logger->log($level, $message);
     }
 
     /**
      * Get a FlowElement by its name.
-     *
-     * @param string $key
-     * @return FlowElement
      */
-    public function getElement($key)
+    public function getElement(string $key): FlowElement
     {
         return $this->flowElementsList[$key];
     }
 
     /**
      * Update metadata store for a FlowElement based on its list of properties.
-     *
-     * @param FlowElement $flowElement
      */
-    public function updatePropertyDatabaseForFlowElement($flowElement)
+    public function updatePropertyDatabaseForFlowElement(FlowElement $flowElement): void
     {
         $dataKey = $flowElement->dataKey;
 

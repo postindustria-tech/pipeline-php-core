@@ -27,6 +27,7 @@ use fiftyone\pipeline\core\ElementData;
 use fiftyone\pipeline\core\FlowData;
 use fiftyone\pipeline\core\FlowElement;
 use fiftyone\pipeline\core\Messages;
+use fiftyone\pipeline\core\Pipeline;
 use PHPUnit\Framework\TestCase;
 
 class FlowDataTests extends TestCase
@@ -41,7 +42,7 @@ class FlowDataTests extends TestCase
         $element->dataKey = 'testKey';
         $data = new ElementData($element);
 
-        $flowData = new FlowData(null);
+        $flowData = new FlowData($this->createMock(Pipeline::class));
         $flowData->setElementData($data);
 
         $returnedData = $flowData->get('testKey');
@@ -58,7 +59,7 @@ class FlowDataTests extends TestCase
         $element->dataKey = 'testKey';
         $data = new ElementData($element);
 
-        $flowData = new FlowData(null);
+        $flowData = new FlowData($this->createMock(Pipeline::class));
         $flowData->setElementData($data);
 
         $returnedData = $flowData->testKey;
@@ -75,7 +76,7 @@ class FlowDataTests extends TestCase
         $element->dataKey = 'testKey';
         $data = new ElementData($element);
 
-        $flowData = new FlowData(null);
+        $flowData = new FlowData($this->createMock(Pipeline::class));
         $flowData->setElementData($data);
 
         $returnedData = $flowData->getFromElement($element);
@@ -92,7 +93,7 @@ class FlowDataTests extends TestCase
         $element->dataKey = 'testKey';
         $data = new ElementData($element);
 
-        $flowData = new FlowData(null);
+        $flowData = new FlowData($this->createMock(Pipeline::class));
         $flowData->setElementData($data);
         
         $this->expectExceptionMessage(sprintf(Messages::NO_ELEMENT_DATA, 'otherKey', 'testKey'));
@@ -110,7 +111,7 @@ class FlowDataTests extends TestCase
         $element->dataKey = 'testKey';
         $data = new ElementData($element);
 
-        $flowData = new FlowData(null);
+        $flowData = new FlowData($this->createMock(Pipeline::class));
         $flowData->setElementData($data);
         
         $this->expectExceptionMessage(sprintf(Messages::NO_ELEMENT_DATA, 'otherKey', 'testKey'));
@@ -131,7 +132,7 @@ class FlowDataTests extends TestCase
         $element2 = $this->createMock(FlowElement::class);
         $element2->dataKey = 'otherKey';
 
-        $flowData = new FlowData(null);
+        $flowData = new FlowData($this->createMock(Pipeline::class));
         $flowData->setElementData($data);
         
         $this->expectExceptionMessage(sprintf(Messages::NO_ELEMENT_DATA, 'otherKey', 'testKey'));

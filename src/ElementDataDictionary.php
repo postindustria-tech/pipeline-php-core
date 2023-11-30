@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -28,15 +30,17 @@ namespace fiftyone\pipeline\core;
  */
 class ElementDataDictionary extends ElementData
 {
-    public $contents;
+    /**
+     * @var array<string, mixed>
+     */
+    public array $contents;
 
     /**
      * Constructor for element data dictionary.
      *
-     * @param FlowElement $flowElement
-     * @param array $contents Dictionary contents
+     * @param array<string, mixed> $contents Dictionary contents
      */
-    public function __construct($flowElement, $contents)
+    public function __construct(FlowElement $flowElement, array $contents)
     {
         $this->contents = $contents;
 
@@ -47,9 +51,9 @@ class ElementDataDictionary extends ElementData
      * Get the values contained in the ElementData instance as a dictionary
      * of keys and values.
      *
-     * @return array
+     * @return array<string, mixed>>
      */
-    public function asDictionary()
+    public function asDictionary(): array
     {
         return $this->contents;
     }
@@ -57,15 +61,10 @@ class ElementDataDictionary extends ElementData
     /**
      * Internal getter for contents.
      *
-     * @param string $key
      * @return mixed
      */
-    public function getInternal($key)
+    public function getInternal(string $key)
     {
-        if (isset($this->contents[$key])) {
-            return $this->contents[$key];
-        }
-
-        return null;
+        return $this->contents[$key] ?? null;
     }
 }

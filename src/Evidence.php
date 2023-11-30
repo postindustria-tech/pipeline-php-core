@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -28,15 +30,19 @@ namespace fiftyone\pipeline\core;
  */
 class Evidence
 {
-    protected $flowData;
-    protected $evidence = [];
+    protected FlowData $flowData;
+
+    /**
+     * @var array<string, int|string>
+     */
+    protected array $evidence = [];
 
     /**
      * Evidence container constructor.
      *
-     * @param FlowData $flowData Parent FlowData
+     * @param \fiftyone\pipeline\core\FlowData $flowData Parent FlowData
      */
-    public function __construct($flowData)
+    public function __construct(FlowData $flowData)
     {
         $this->flowData = $flowData;
     }
@@ -45,10 +51,9 @@ class Evidence
      * If a flow element can use the key then add the key value pair to the
      * evidence collection.
      *
-     * @param string $key
-     * @param mixed $value
+     * @param int|string $value
      */
-    public function set($key, $value)
+    public function set(string $key, $value): void
     {
         $keep = false;
 
@@ -67,12 +72,14 @@ class Evidence
     /**
      * Helper function to set multiple pieces of evidence from an array.
      *
-     * @param array $array
+     * @param array<string, int|string> $array
      */
-    public function setArray($array)
+    public function setArray($array): void
     {
         if (!is_array($array)) {
-            $this->flowData->setError('core', Messages::PASS_KEY_VALUE);
+            $this->flowData->setError('core', new \Exception(Messages::PASS_KEY_VALUE));
+
+            return;
         }
 
         foreach ($array as $key => $value) {
@@ -85,11 +92,11 @@ class Evidence
      * No argument version automatically reads from current request using the
      * $_SERVER, $_COOKIE, $_GET and $_POST globals.
      *
-     * @param null|array $server Key-value pairs for the HTTP headers
-     * @param null|array $cookies Key-value pairs for the cookies
-     * @param null|array $query Key-value pairs for the form parameters
+     * @param null|array<string, string> $server Key-value pairs for the HTTP headers
+     * @param null|array<string, string> $cookies Key-value pairs for the cookies
+     * @param null|array<string, string> $query Key-value pairs for the form parameters
      */
-    public function setFromWebRequest($server = null, $cookies = null, $query = null)
+    public function setFromWebRequest(?array $server = null, ?array $cookies = null, ?array $query = null): void
     {
         if ($server === null) {
             $server = $_SERVER;
@@ -155,23 +162,19 @@ class Evidence
     /**
      * Get a piece of evidence by key.
      *
-     * @param string $key
+     * @return null|int|string
      */
-    public function get($key)
+    public function get(string $key)
     {
-        if (isset($this->evidence[$key])) {
-            return $this->evidence[$key];
-        }
-
-        return null;
+        return $this->evidence[$key] ?? null;
     }
 
     /**
      * Get all evidence.
      *
-     * @return array
+     * @return array<string, int|string>
      */
-    public function getAll()
+    public function getAll(): array
     {
         return $this->evidence;
     }
