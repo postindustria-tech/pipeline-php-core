@@ -21,34 +21,33 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-
-
 namespace fiftyone\pipeline\core;
 
 /**
-   * An AspectPropertyValue is a wrapper for a value
-   * It lets you check this wrapper has a value inside it
-   * If not value is set, a specific no value message is returned
-*/
+ * An AspectPropertyValue is a wrapper for a value
+ * It lets you check this wrapper has a value inside it
+ * If not value is set, a specific no value message is returned.
+ */
 class AspectPropertyValue
 {
-    private $_value;
-    public $noValueMessage = null;
+    public $noValueMessage;
     public $hasValue = false;
+    private $_value;
 
     /**
-    * Constructor for AspectPropertyValue
-    * @param string if there is no value, the reason for there not being one
-    * @param mixed the value
-    */
-    public function __construct($noValueMessage = null, $value = "noValue")
+     * Constructor for AspectPropertyValue.
+     *
+     * @param null|string $noValueMessage Reason why the value is missing
+     * @param mixed $value
+     */
+    public function __construct($noValueMessage = null, $value = 'noValue')
     {
-        if ($value !== "noValue") {
+        if ($value !== 'noValue') {
             $this->value = $value;
             $this->noValueMessage = null;
             $this->hasValue = true;
         }
-        
+
         if ($noValueMessage) {
             $this->hasValue = false;
             $this->noValueMessage = $noValueMessage;
@@ -56,16 +55,19 @@ class AspectPropertyValue
     }
 
     /**
-    * Magic getter to access the value or throw an error with the no value message
-    * @param string key
-    * @return mixed value
-    */
+     * Magic getter to access the value or throw an error with the no value message.
+     *
+     * @param string $key
+     * @return mixed
+     * @throws \Exception
+     */
     public function __get($key)
     {
-        if ($key === "value") {
+        if ($key === 'value') {
             if ($this->hasValue) {
                 return $this->_value;
-            } else if (!empty($this->noValueMessage)) {
+            }
+            if (!empty($this->noValueMessage)) {
                 throw new \Exception($this->noValueMessage);
             }
         }
@@ -73,7 +75,7 @@ class AspectPropertyValue
 
     public function __set($key, $value)
     {
-        if ($key === "value") {
+        if ($key === 'value') {
             $this->_value = $value;
             $this->hasValue = true;
         }

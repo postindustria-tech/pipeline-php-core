@@ -23,6 +23,8 @@
 
 namespace fiftyone\pipeline\core;
 
+use JShrink\Minifier;
+
 /**
  * The JavaScriptBuilder aggregates JavaScript properties
  * from FlowElements in the Pipeline. This JavaScript also (when needed)
@@ -39,158 +41,148 @@ class JavascriptBuilderElement extends FlowElement
     public $settings;
     public $minify;
 
-    public function __construct($settings = array())
+    public $dataKey = 'javascriptbuilder';
+
+    public function __construct($settings = [])
     {
         $this->settings = [
-
-            "_objName" => isset($settings["objName"]) ? $settings["objName"] : "fod",
-            "_protocol" => isset($settings["protocol"]) ? $settings["protocol"] : null,
-            "_host" => isset($settings["host"]) ? $settings["host"] : null,
-            "_endpoint" => isset($settings["endpoint"]) ? $settings["endpoint"] : "",
-            "_enableCookies" => isset($settings["enableCookies"]) ? $settings["enableCookies"] : true
-
+            '_objName' => $settings['objName'] ?? 'fod',
+            '_protocol' => $settings['protocol'] ?? null,
+            '_host' => $settings['host'] ?? null,
+            '_endpoint' => $settings['endpoint'] ?? '',
+            '_enableCookies' => $settings['enableCookies'] ?? true
         ];
-        $this->minify = isset($settings["minify"]) ? $settings["minify"] : true;
-    }
 
-    public $dataKey = "javascriptbuilder";
+        $this->minify = $settings['minify'] ?? true;
+    }
 
     /**
      * The JavaScriptBuilder captures query string evidence and
-     * headers for detecting whether the request is http or https
-    */
+     * headers for detecting whether the request is http or https.
+     *
+     * @return EvidenceKeyFilter
+     */
     public function getEvidenceKeyFilter()
     {
         $filter = new EvidenceKeyFilter();
 
         $filter->filterEvidenceKey = function ($key) {
-            if (strpos($key, "query.") !== false) {
+            if (strpos($key, 'query.') !== false) {
                 return true;
             }
-    
-            if ($key == "header.host" || $key == "header.protocol") {
+
+            if ($key == 'header.host' || $key == 'header.protocol') {
                 return true;
             }
-    
+
             return false;
         };
-        
+
         return $filter;
     }
 
     /**
      * The JavaScriptBundler collects client side javascript to serve.
-     * @param FlowData FlowData
-    */
+     *
+     * @param FlowData $flowData
+     */
     public function processInternal($flowData)
     {
-        $m = new \Mustache_Engine();
-
-        $vars = array();
+        $vars = [];
 
         foreach ($this->settings as $key => $value) {
             $vars[$key] = $value;
         }
 
-        $vars["_jsonObject"] = json_encode($flowData->jsonbundler->json);
+        $vars['_jsonObject'] = json_encode($flowData->jsonbundler->json);
 
         // Generate URL and autoUpdate params
+        $protocol = $this->settings['_protocol'];
+        $host = $this->settings['_host'];
 
-        $protocol = $this->settings["_protocol"];
-        $host = $this->settings["_host"];
-
-        if (!isset($protocol) || trim($protocol) === '') {
+        if ($protocol === null || trim($protocol) === '') {
             // Check if protocol is provided in evidence
-
-            if ($flowData->evidence->get("header.protocol")) {
-                $protocol = $flowData->evidence->get("header.protocol");
+            if ($flowData->evidence->get('header.protocol')) {
+                $protocol = $flowData->evidence->get('header.protocol');
             }
         }
-        if (!isset($protocol) || trim($protocol) === '') {
-            $protocol = "https";
+
+        if ($protocol === null || trim($protocol) === '') {
+            $protocol = 'https';
         }
 
-
-        if (!isset($host) || trim($host) === '') {
+        if ($host === null || trim($host) === '') {
             // Check if host is provided in evidence
-
-            if ($flowData->evidence->get("header.host")) {
-                $host = $flowData->evidence->get("header.host");
+            if ($flowData->evidence->get('header.host')) {
+                $host = $flowData->evidence->get('header.host');
             }
         }
 
-        $vars["_host"] = $host;
-        $vars["_protocol"] = $protocol;
+        $vars['_host'] = $host;
+        $vars['_protocol'] = $protocol;
 
         $params = $this->getEvidenceKeyFilter()->filterEvidence($flowData->evidence->getAll());
 
-        if ($vars["_host"] && $vars["_protocol"] && $vars["_endpoint"]) {
-            $vars["_url"] = $vars["_protocol"] . "://" . $vars["_host"] . $vars["_endpoint"];
-            
+        if ($vars['_host'] && $vars['_protocol'] && $vars['_endpoint']) {
+            $vars['_url'] = $vars['_protocol'] . '://' . $vars['_host'] . $vars['_endpoint'];
 
             // Add query parameters to the URL
             $query = [];
- 
-            foreach ($params as $param => $paramValue) {
-                $paramKey = explode(".", $param)[1];
 
+            foreach ($params as $param => $paramValue) {
+                $paramKey = explode('.', $param)[1];
                 $query[$paramKey] = $paramValue;
             }
-  
-            $urlQuery = http_build_query($query);
-  
-            // Does the URL already have a query string in it?
-    
-            if (strpos($vars["_url"], "?") === false) {
-                $vars["_url"] .= "?";
-            } else {
-                $vars["_url"] .= "&";
-            }
-        
-            $vars["_url"] .= $urlQuery;
 
-            $vars["_updateEnabled"] = true;
+            $urlQuery = http_build_query($query);
+
+            // Does the URL already have a query string in it?
+            if (strpos($vars['_url'], '?') === false) {
+                $vars['_url'] .= '?';
+            } else {
+                $vars['_url'] .= '&';
+            }
+
+            $vars['_url'] .= $urlQuery;
+
+            $vars['_updateEnabled'] = true;
         } else {
-            $vars["_updateEnabled"] = false;
+            $vars['_updateEnabled'] = false;
         }
 
         // Use results from device detection if available to determine
         // if the browser supports promises.
-        
-        if (property_exists($flowData, "device") && property_exists($flowData->device, "promise")) {
-            $vars["_supportsPromises"] = $flowData->device->promise->value == true;
+        if (property_exists($flowData, 'device') && property_exists($flowData->device, 'promise')) {
+            $vars['_supportsPromises'] = $flowData->device->promise->value == true;
         } else {
-            $vars["_supportsPromises"] = false;
+            $vars['_supportsPromises'] = false;
         }
 
         // Check if any delayedproperties exist in the json
+        $vars['_hasDelayedProperties'] = strpos($vars['_jsonObject'], 'delayexecution') !== false;
+        $vars['_sessionId'] = $flowData->evidence->get('query.session-id');
+        $vars['_sequence'] = $flowData->evidence->get('query.sequence');
 
-        $vars["_hasDelayedProperties"] = strpos($vars["_jsonObject"], "delayexecution") !== false;
-        $vars["_sessionId"] = $flowData->evidence->get("query.session-id");
-        $vars["_sequence"] = $flowData->evidence->get("query.sequence");
-        
         $jsParams = [];
         foreach ($params as $param => $paramValue) {
-            $paramKey = explode(".", $param)[1];
+            $paramKey = explode('.', $param)[1];
             $jsParams[$paramKey] = $paramValue;
         }
-        
-        $vars["_parameters"] = json_encode($jsParams);
 
-        $output = $m->render(
-            file_get_contents(__DIR__ . '/../javascript-templates/JavaScriptResource.mustache'), 
+        $vars['_parameters'] = json_encode($jsParams);
+
+        $output = (new \Mustache_Engine())->render(
+            file_get_contents(__DIR__ . '/../javascript-templates/JavaScriptResource.mustache'),
             $vars
         );
 
-		if($this->minify) {
+        if ($this->minify) {
             // Minify the output
-            $output = \JShrink\Minifier::minify($output);
+            $output = Minifier::minify($output);
         }
-        
-        $data = new ElementDataDictionary($this, ["javascript" => $output]);
+
+        $data = new ElementDataDictionary($this, ['javascript' => $output]);
 
         $flowData->setElementData($data);
-
-        return;
     }
 }

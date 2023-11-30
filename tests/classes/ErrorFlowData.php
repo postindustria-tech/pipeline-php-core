@@ -21,24 +21,22 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-
-
 namespace fiftyone\pipeline\core\tests\classes;
 
-use fiftyone\pipeline\core\FlowElement;
 use fiftyone\pipeline\core\BasicListEvidenceKeyFilter;
+use fiftyone\pipeline\core\FlowElement;
 
 class ErrorFlowData extends FlowElement
 {
-    public $dataKey = "error";
+    public $dataKey = 'error';
 
     public function processInternal($flowData)
     {
-        throw new \Exception("Something went wrong");
+        throw new \Exception('Something went wrong');
     }
 
     public function getEvidenceKeyFilter()
     {
-        return new BasicListEvidenceKeyFilter(["header.user-agent"]);
+        return new BasicListEvidenceKeyFilter(['header.user-agent']);
     }
 }

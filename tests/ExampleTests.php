@@ -30,16 +30,16 @@ class ExampleTests extends TestCase
     public function testCustomFlowElementExample()
     {
         ob_start(); // hide output
-        include __DIR__ . "/../examples/CustomFlowElement.php";
+        include __DIR__ . '/../examples/CustomFlowElement.php';
         ob_end_clean(); // discard output
 
-        $this->assertTrue(strpos($output, "Starsign") !== false);
+        $this->assertTrue(strpos($output, 'Starsign') !== false);
     }
 
     public function testPipelineExample()
     {
-        include __DIR__ . "/../examples/Pipeline.php";
+        include __DIR__ . '/../examples/Pipeline.php';
 
-        $this->assertTrue($FlowData->example1->exampleProperty1 === 5);
+        $this->assertTrue($flowData->example1->exampleProperty1 === 5);
     }
 }

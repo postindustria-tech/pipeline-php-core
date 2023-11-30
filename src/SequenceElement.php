@@ -24,26 +24,28 @@
 namespace fiftyone\pipeline\core;
 
 /**
-  * The SequenceElement stores session data regarding
-  * requests for client side JavaScript from the JavaScript
-  * created by a Pipeline's JavaScriptBuilder
-  * If a Pipeline is constructed with the JavaScript elements
-  * enabled this is added automatically along with the JavaScriptBuilder
-  * and JSONBundler.
-**/
+ * The SequenceElement stores session data regarding
+ * requests for client side JavaScript from the JavaScript
+ * created by a Pipeline's JavaScriptBuilder
+ * If a Pipeline is constructed with the JavaScript elements
+ * enabled this is added automatically along with the JavaScriptBuilder
+ * and JSONBundler.
+ */
 class SequenceElement extends FlowElement
 {
-    public $dataKey = "sequence";
+    public $dataKey = 'sequence';
 
     /**
-     * The SequenceElement uses query.sequence and query.session-id evidence
-    */
+     * The SequenceElement uses query.sequence and query.session-id evidence.
+     *
+     * @return EvidenceKeyFilter
+     */
     public function getEvidenceKeyFilter()
     {
         $filter = new EvidenceKeyFilter();
 
         $filter->filterEvidenceKey = function ($key) {
-            if ($key == "query.sequence" || $key == "query.session-id") {
+            if ($key === 'query.sequence' || $key === 'query.session-id') {
                 return true;
             }
 
@@ -54,30 +56,26 @@ class SequenceElement extends FlowElement
     }
 
     /**
-     * The SequenceElement stores session data for requests for JavaScript
-     * @param {FlowData} FlowData
-    */
+     * The SequenceElement stores session data for requests for JavaScript.
+     *
+     * @param FlowData $flowData
+     */
     public function processInternal($flowData)
     {
-        if ($flowData->evidence->get("query.session-id")) {
+        if ($flowData->evidence->get('query.session-id')) {
             // Get current sequence number
-      
-            $sequence = $flowData->evidence->get("query.sequence");
-      
+            $sequence = $flowData->evidence->get('query.sequence');
+
             if ($sequence) {
                 $sequence = intval($sequence);
             } else {
                 $sequence = 1;
             }
-      
-            $flowData->evidence->set("query.sequence", $sequence + 1);
+
+            $flowData->evidence->set('query.sequence', $sequence + 1);
         } else {
-            $flowData->evidence->set(
-                "query.session-id",
-                uniqid()
-            );
-      
-            $flowData->evidence->set("query.sequence", 1);
+            $flowData->evidence->set('query.session-id', uniqid());
+            $flowData->evidence->set('query.sequence', 1);
         }
     }
 }

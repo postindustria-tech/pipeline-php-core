@@ -24,11 +24,11 @@
 namespace fiftyone\pipeline\core;
 
 /**
-  * FlowData is created by a specific Pipeline
-  * It collects evidence set by the user
-  * It passes evidence to FlowElements in the Pipeline
-  * These elements can return ElementData or populate an errors object
-*/
+ * FlowData is created by a specific Pipeline
+ * It collects evidence set by the user
+ * It passes evidence to FlowElements in the Pipeline
+ * These elements can return ElementData or populate an errors object.
+ */
 class FlowData
 {
     public $pipeline;
@@ -36,12 +36,13 @@ class FlowData
     public $evidence;
     public $data;
     public $processed;
-    public $errors = array();
+    public $errors = [];
 
     /**
-     * Constructor for FlowData
-     * @param Pipeline // parent Pipeline
-    */
+     * Constructor for FlowData.
+     *
+     * @param Pipeline $pipeline Parent Pipeline
+     */
     public function __construct($pipeline)
     {
         $this->pipeline = $pipeline;
@@ -50,17 +51,28 @@ class FlowData
     }
 
     /**
-      * process function runs the process function on every attached FlowElement
-      * allowing data to be changed based on evidence
-      * This can only be run once per FlowData instance
-      * @return FlowData
-    */
+     * Magic getter to allow $FlowData->FlowElementKey getting.
+     *
+     * @param string $flowElementKey
+     * @return ElementData
+     */
+    public function __get($flowElementKey)
+    {
+        return $this->get($flowElementKey);
+    }
+
+    /**
+     * process function runs the process function on every attached FlowElement
+     * allowing data to be changed based on evidence
+     * This can only be run once per FlowData instance.
+     * @return FlowData
+     */
     public function process()
     {
         if (!$this->processed) {
             foreach ($this->pipeline->flowElements as $flowElement) {
                 if (!$this->stopped) {
-            // All errors are caught and stored in an errors array keyed by the
+                    // All errors are caught and stored in an errors array keyed by the
                     // FlowElement that set the error
 
                     try {
@@ -76,13 +88,13 @@ class FlowData
             // Set processed flag to true. FlowData can only be processed once
 
             $this->processed = true;
-            
         } else {
-            $this->setError("global", new \Exception(Messages::FLOW_DATA_PROCESSED));
+            $this->setError('global', new \Exception(Messages::FLOW_DATA_PROCESSED));
         }
 
         if (count($this->errors) != 0 && $this->pipeline->suppressProcessExceptions === false) {
             $exception = reset($this->errors);
+
             throw $exception;
         }
 
@@ -90,84 +102,74 @@ class FlowData
     }
 
     /**
-     * Retrieve data by FlowElement object
-     * @param FlowElement
+     * Retrieve data by FlowElement object.
+     *
+     * @param FlowElement $flowElement
      * @return ElementData
-    */
+     */
     public function getFromElement($flowElement)
     {
         return $this->get($flowElement->dataKey);
     }
 
     /**
-     * Retrieve data by FlowElement key
-     * @param string FlowElementDataKey
-     * @return ElementData
+     * Retrieve data by FlowElement key.
      *
-    */
+     * @param string $flowElementKey
+     * @return ElementData
+     * @throws \Exception
+     */
     public function get($flowElementKey)
-    {   
-        if (isset($this->data[$flowElementKey])) {
-            return $this->data[$flowElementKey];
-        } else {
-			if(is_null($this->data)){
-            throw new \Exception(
-                sprintf(Messages::NO_ELEMENT_DATA_NULL, $flowElementKey));
-	        } else {
-            throw new \Exception(
-                sprintf(Messages::NO_ELEMENT_DATA,
-                    $flowElementKey,
-                        join(",", array_keys($this->data))));
-			}
-        }
-    }
-
-    /**
-     * Magic getter to allow $FlowData->FlowElementKey getting
-     * @param string FlowElementKey
-     * @return $ElementData
-    */
-    public function __get($flowElementKey)
     {
-        return $this->get($flowElementKey);
+        if ($this->data === null) {
+            throw new \Exception(sprintf(Messages::NO_ELEMENT_DATA_NULL, $flowElementKey));
+        }
+
+        if (!isset($this->data[$flowElementKey])) {
+            throw new \Exception(sprintf(Messages::NO_ELEMENT_DATA, $flowElementKey, join(',', array_keys($this->data))));
+        }
+
+        return $this->data[$flowElementKey];
     }
 
     /**
-     * Set data (used by FlowElement)
-     * @param ElementData
-    */
+     * Set data (used by FlowElement).
+     *
+     * @param ElementData $data
+     */
     public function setElementData($data)
     {
         $this->data[$data->flowElement->dataKey] = $data;
     }
 
     /**
-     * Set error (should be keyed by FlowElement dataKey)
-     * @param string key
-     * @param Exception error
-    */
+     * Set error (should be keyed by FlowElement dataKey).
+     *
+     * @param string $key
+     * @param \Exception $error
+     */
     public function setError($key, $error)
     {
         $this->errors[$key] = $error;
 
-        $logMessage = "Error occurred during processing";
+        $logMessage = 'Error occurred during processing';
 
         if (!empty($key)) {
-            $logMessage = $logMessage . " of " . $key . ". \n" . $error;
+            $logMessage = $logMessage . ' of ' . $key . ". \n" . $error;
         }
-                        
-        $this->pipeline->log("error", $logMessage);
 
+        $this->pipeline->log('error', $logMessage);
     }
 
     /**
      * Get an array evidence stored in the FlowData, filtered by
-     * its FlowElements' EvidenceKeyFilters
+     * its FlowElements' EvidenceKeyFilters.
+     *
      * @return array
-    */
+     */
     public function getEvidenceDataKey()
     {
-        $requestedEvidence = array();
+        $requestedEvidence = [];
         $evidence = $this->evidence->getAll();
 
         foreach ($this->pipeline->flowElements as $flowElement) {
@@ -178,51 +180,45 @@ class FlowData
     }
 
     /**
-     * Stop processing any subsequent FlowElements
-     * @return void
-    */
+     * Stop processing any subsequent FlowElements.
+     */
     public function stop()
     {
         $this->stopped = true;
     }
 
     /**
-     * Get data from FlowElement based on property meta data
-     * @param string metakey
-     * @param mixed metavalue
+     * Get data from FlowElement based on property metadata.
+     *
+     * @param string $metaKey
+     * @param mixed $metaValue
      * @return array
-    */
+     */
     public function getWhere($metaKey, $metaValue)
     {
-        $metaKey = \strtolower($metaKey);
-        $metaValue = \strtolower($metaValue);
+        $metaKey = strtolower($metaKey);
+        $metaValue = strtolower($metaValue);
 
-        $keys = array();
-      
-        if (isset($this->pipeline->propertyDatabase[$metaKey])) {
-            if (isset($this->pipeline->propertyDatabase[$metaKey][$metaValue])) {
-                foreach ($this->pipeline->propertyDatabase[$metaKey][$metaValue] as $key => $value) {
-                    $keys[$key] = $value["flowElement"];
-                }
+        $keys = [];
+
+        if (isset($this->pipeline->propertyDatabase[$metaKey][$metaValue])) {
+            foreach ($this->pipeline->propertyDatabase[$metaKey][$metaValue] as $key => $value) {
+                $keys[$key] = $value['flowElement'];
             }
         }
 
-        $output = array();
+        $output = [];
 
-        if (isset($keys)) {
-            foreach ($keys as $key => $flowElement) {
+        foreach ($keys as $key => $flowElement) {
+            // First check if FlowElement has any data set
+            if (isset($this->data[$flowElement])) {
+                $data = $this->get($flowElement);
 
-                // First check if FlowElement has any data set
-
-                if (isset($this->data[$flowElement])) {
-                    $data = $this->get($flowElement);
-
-                    if ($data) {
-                        try {
-                            $output[$key] = $data->get($key);
-                        } catch (\Exception $e) {
-                            continue;
-                        }
+                if ($data) {
+                    try {
+                        $output[$key] = $data->get($key);
+                    } catch (\Exception $e) {
+                        continue;
                     }
                 }
             }

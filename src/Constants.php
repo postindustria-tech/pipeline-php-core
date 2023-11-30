@@ -24,10 +24,11 @@
 namespace fiftyone\pipeline\core;
 
 /**
- * Class containing projects's constants.
+ * Class containing project's constants.
  */
-class Constants {
-    const SETHEADER_ELEMENT_KEY = "set-headers";
-    const SETHEADER_DATA_KEY = "responseheaderdictionary";
-    const ACCEPTCH_HEADER = "Accept-CH";
+class Constants
+{
+    public const SETHEADER_ELEMENT_KEY = 'set-headers';
+    public const SETHEADER_DATA_KEY = 'responseheaderdictionary';
+    public const ACCEPTCH_HEADER = 'Accept-CH';
 }

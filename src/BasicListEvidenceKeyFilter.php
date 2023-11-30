@@ -21,34 +21,34 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
-
-
 namespace fiftyone\pipeline\core;
 
 /**
-  * An instance of EvidenceKeyFilter that uses a simple array of keys
-  * Evidence not using these keys is filtered out
-*/
+ * An instance of EvidenceKeyFilter that uses a simple array of keys
+ * Evidence not using these keys is filtered out.
+ */
 class BasicListEvidenceKeyFilter extends EvidenceKeyFilter
 {
     private $list;
 
     /**
-    * @param mixed[] an array of keys to keep
-    */
+     * @param array $list an array of keys to keep
+     */
     public function __construct($list)
     {
         $this->list = $list;
     }
 
     /**
-    * @param string key to check in the filter
-    * @return boolean is this key in the filter's keys list?
-    */
+     * @param string $key key to check in the filter
+     * @return bool is this key in the filter's keys list?
+     */
     public function filterEvidenceKey($key)
     {
+        $key = strtolower($key);
+
         foreach ($this->list as $evidenceKey) {
-            if (strtolower($key) === strtolower($evidenceKey)) {
+            if ($key === strtolower($evidenceKey)) {
                 return true;
             }
         }
@@ -58,7 +58,8 @@ class BasicListEvidenceKeyFilter extends EvidenceKeyFilter
 
     /**
      * Get the internal list of evidence keys in this filter.
-     * @return mixed[] evidence keys
+     *
+     * @return array evidence keys
      */
     public function getList()
     {
