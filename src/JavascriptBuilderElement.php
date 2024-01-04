@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 use JShrink\Minifier;
@@ -38,12 +40,17 @@ use JShrink\Minifier;
  */
 class JavascriptBuilderElement extends FlowElement
 {
-    public $settings;
-    public $minify;
+    /**
+     * @var array<string, mixed>
+     */
+    public array $settings;
+    public bool $minify;
+    public string $dataKey = 'javascriptbuilder';
 
-    public $dataKey = 'javascriptbuilder';
-
-    public function __construct($settings = [])
+    /**
+     * @param array<string, mixed> $settings
+     */
+    public function __construct(array $settings = [])
     {
         $this->settings = [
             '_objName' => $settings['objName'] ?? 'fod',
@@ -54,15 +61,15 @@ class JavascriptBuilderElement extends FlowElement
         ];
 
         $this->minify = $settings['minify'] ?? true;
+
+        parent::__construct();
     }
 
     /**
      * The JavaScriptBuilder captures query string evidence and
      * headers for detecting whether the request is http or https.
-     *
-     * @return EvidenceKeyFilter
      */
-    public function getEvidenceKeyFilter()
+    public function getEvidenceKeyFilter(): EvidenceKeyFilter
     {
         $filter = new EvidenceKeyFilter();
 
@@ -83,10 +90,8 @@ class JavascriptBuilderElement extends FlowElement
 
     /**
      * The JavaScriptBundler collects client side javascript to serve.
-     *
-     * @param FlowData $flowData
      */
-    public function processInternal($flowData)
+    public function processInternal(FlowData $flowData): void
     {
         $vars = [];
 

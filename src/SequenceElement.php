@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -33,14 +35,12 @@ namespace fiftyone\pipeline\core;
  */
 class SequenceElement extends FlowElement
 {
-    public $dataKey = 'sequence';
+    public string $dataKey = 'sequence';
 
     /**
      * The SequenceElement uses query.sequence and query.session-id evidence.
-     *
-     * @return EvidenceKeyFilter
      */
-    public function getEvidenceKeyFilter()
+    public function getEvidenceKeyFilter(): EvidenceKeyFilter
     {
         $filter = new EvidenceKeyFilter();
 
@@ -57,10 +57,8 @@ class SequenceElement extends FlowElement
 
     /**
      * The SequenceElement stores session data for requests for JavaScript.
-     *
-     * @param FlowData $flowData
      */
-    public function processInternal($flowData)
+    public function processInternal(FlowData $flowData): void
     {
         if ($flowData->evidence->get('query.session-id')) {
             // Get current sequence number

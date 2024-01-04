@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -33,16 +35,22 @@ namespace fiftyone\pipeline\core;
  */
 class JsonBundlerElement extends FlowElement
 {
-    public $dataKey = 'jsonbundler';
-    public $json;
-    private $propertyCache = [];
+    public string $dataKey = 'jsonbundler';
+
+    /**
+     * @var array<string, mixed>
+     */
+    public array $json;
+
+    /**
+     * @var array<string, mixed>
+     */
+    private array $propertyCache = [];
 
     /**
      * The JSONBundler extracts all properties from a FlowData and serializes them into JSON.
-     *
-     * @param FlowData $flowData
      */
-    public function processInternal($flowData)
+    public function processInternal(FlowData $flowData): void
     {
         // Get every property on every FlowElement
         // Storing JavaScript properties in an extra section
@@ -129,6 +137,7 @@ class JsonBundlerElement extends FlowElement
                 }
 
                 try {
+                    /** @phpstan-var null|\fiftyone\pipeline\core\AspectPropertyValue $valueContainer */
                     $valueContainer = $flowData->get($flowElement->dataKey)->get($propertyKey);
 
                     // Check if value is of the aspect property value type

@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 class Utils
@@ -28,9 +30,9 @@ class Utils
     /**
      * Set response headers in the response object (e.g. Accept-CH).
      *
-     * @param FlowData $flowData A processed FlowData instance to get the response header values from
+     * @param \fiftyone\pipeline\core\FlowData $flowData A processed FlowData instance to get the response header values from
      */
-    public static function setResponseHeader($flowData)
+    public static function setResponseHeader(FlowData $flowData): void
     {
         $setHeaderElementKey = Constants::SETHEADER_ELEMENT_KEY;
         $setHeaderDataKey = Constants::SETHEADER_DATA_KEY;

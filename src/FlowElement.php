@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -32,15 +34,24 @@ namespace fiftyone\pipeline\core;
  */
 class FlowElement
 {
-    public $dataKey;
-    public $properties = [];
-    // List of Pipelines the FlowElement has been added to
-    public $pipelines = [];
+    public string $dataKey;
+
+    /**
+     * @var array<string, array<string, mixed>>
+     */
+    public array $properties = [];
+
+    /**
+     * List of Pipelines the FlowElement has been added to.
+     *
+     * @var array<\fiftyone\pipeline\core\Pipeline>
+     */
+    public array $pipelines = [];
 
     /**
      * A default dummy constructor is needed for there are classes inheriting this
      * class deeper than 1-level of inheritance and calling parent::__construct() in their
-     * explicit constructors unfortunately intermediates do not define their own __construct()
+     * explicit constructors. Unfortunately intermediates do not define their own __construct()
      * so the call propagates up to the base class FlowElement and fails.
      * Intermediates might define their own __construct() at some point, so we do not want to
      * remove parent::__construct() calls, rather add this one as a catch-all.
@@ -50,21 +61,17 @@ class FlowElement
 
     /**
      * General wrapper function that calls a FlowElement's processInternal method.
-     *
-     * @param FlowData $flowData
      */
-    public function process($flowData)
+    public function process(FlowData $flowData): void
     {
-        return $this->processInternal($flowData);
+        $this->processInternal($flowData);
     }
 
     /**
      * Function for getting the FlowElement's EvidenceKeyFilter
      * Used by the filterEvidence method.
-     *
-     * @return EvidenceKeyFilter
      */
-    public function getEvidenceKeyFilter()
+    public function getEvidenceKeyFilter(): EvidenceKeyFilter
     {
         return new EvidenceKeyFilter();
     }
@@ -72,10 +79,9 @@ class FlowElement
     /**
      * Filter FlowData evidence using the FlowElement's EvidenceKeyFilter.
      *
-     * @param FlowData $flowData
-     * @return mixed
+     * @return array<string, int|string>
      */
-    public function filterEvidence($flowData)
+    public function filterEvidence(FlowData $flowData): array
     {
         $filter = $this->getEvidenceKeyFilter();
 
@@ -84,11 +90,8 @@ class FlowElement
 
     /**
      * Filter FlowData evidence using the FlowElement's EvidenceKeyFilter.
-     *
-     * @param string $key
-     * @return mixed
      */
-    public function filterEvidenceKey($key)
+    public function filterEvidenceKey(string $key): bool
     {
         $filter = $this->getEvidenceKeyFilter();
 
@@ -97,32 +100,28 @@ class FlowElement
 
     /**
      * Callback called when an engine is added to a pipeline.
-     *
-     * @param Pipeline $pipeline
      */
-    public function onRegistration($pipeline)
+    public function onRegistration(Pipeline $pipeline): void
     {
-        return $pipeline;
+        return;
     }
 
     /**
      * Process FlowData - this is process function
-     * is usually overriden by specific FlowElements to do their core work.
-     *
-     * @param FlowData $flowData
+     * is usually overridden by specific FlowElements to do their core work.
      */
-    public function processInternal($flowData)
+    public function processInternal(FlowData $flowData): void
     {
-        return true;
+        return;
     }
 
     /**
      * Get properties
      * Usually overridden by specific FlowElements.
      *
-     * @return array Key-value array of properties
+     * @return array<string, array<string, mixed>> Key-value array of properties
      */
-    public function getProperties()
+    public function getProperties(): array
     {
         return $this->properties;
     }
@@ -133,7 +132,7 @@ class FlowElement
      * at a later stage, such as cloud request based FlowElements or
      * FlowElements that change their properties later based on new datafiles.
      */
-    public function updatePropertyList()
+    public function updatePropertyList(): void
     {
         foreach ($this->pipelines as $pipeline) {
             $pipeline->updatePropertyDatabaseForFlowElement($this);

@@ -23,28 +23,29 @@
 
 use fiftyone\pipeline\core\BasicListEvidenceKeyFilter;
 use fiftyone\pipeline\core\ElementDataDictionary;
+use fiftyone\pipeline\core\FlowData;
 use fiftyone\pipeline\core\FlowElement;
 
 // Two simple FlowElements
 
 class ExampleFlowElementA extends FlowElement
 {
-    public $dataKey = 'example1';
+    public string $dataKey = 'example1';
 
-    public $properties = [
+    public array $properties = [
         'exampleProperty1' => [
             'type' => 'int'
         ]
     ];
 
-    public function processInternal($flowData)
+    public function processInternal(FlowData $flowData): void
     {
         $data = new ElementDataDictionary($this, ['exampleProperty1' => 5]);
 
         $flowData->setElementData($data);
     }
 
-    public function getEvidenceKeyFilter()
+    public function getEvidenceKeyFilter(): BasicListEvidenceKeyFilter
     {
         return new BasicListEvidenceKeyFilter(['header.user-agent']);
     }
@@ -52,22 +53,22 @@ class ExampleFlowElementA extends FlowElement
 
 class ExampleFlowElementB extends FlowElement
 {
-    public $dataKey = 'example2';
+    public string $dataKey = 'example2';
 
-    public $properties = [
+    public array $properties = [
         'exampleProperty2' => [
             'type' => 'int'
         ]
     ];
 
-    public function processInternal($flowData)
+    public function processInternal(FlowData $flowData): void
     {
         $data = new ElementDataDictionary($this, ['exampleProperty2' => 7]);
 
         $flowData->setElementData($data);
     }
 
-    public function getEvidenceKeyFilter()
+    public function getEvidenceKeyFilter(): BasicListEvidenceKeyFilter
     {
         return new BasicListEvidenceKeyFilter(['header.user-agent']);
     }
@@ -78,14 +79,14 @@ if (!class_exists('ErrorFlowElement')) {
 
     class ErrorFlowElement extends FlowElement
     {
-        public $dataKey = 'error';
+        public string $dataKey = 'error';
 
-        public function processInternal($flowData)
+        public function processInternal(FlowData $flowData): void
         {
             throw new Exception('Something went wrong');
         }
 
-        public function getEvidenceKeyFilter()
+        public function getEvidenceKeyFilter(): BasicListEvidenceKeyFilter
         {
             return new BasicListEvidenceKeyFilter(['header.user-agent']);
         }
@@ -97,14 +98,14 @@ if (!class_exists('StopFlowElement')) {
 
     class StopFlowElement extends FlowElement
     {
-        public $dataKey = 'stop';
+        public string $dataKey = 'stop';
 
-        public function processInternal($flowData)
+        public function processInternal(FlowData $flowData): void
         {
             $flowData->stop();
         }
 
-        public function getEvidenceKeyFilter()
+        public function getEvidenceKeyFilter(): BasicListEvidenceKeyFilter
         {
             return new BasicListEvidenceKeyFilter(['header.user-agent']);
         }
