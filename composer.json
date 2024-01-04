@@ -3,11 +3,6 @@
     "description": "51Degrees Pipeline API - Real-time data micro-services aggregator.",
     "authors" : [
         {
-            "name": "Filip Hnízdo",
-            "email": "filip@octophin.com",
-            "homepage": "https://octophindigital.com/"
-        },
-        {
             "name": "51Degrees Engineering",
             "email": "engineering@51degrees.com"
         }
