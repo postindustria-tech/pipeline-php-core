@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -29,12 +31,15 @@ namespace fiftyone\pipeline\core;
  */
 class BasicListEvidenceKeyFilter extends EvidenceKeyFilter
 {
-    private $list;
+    /**
+     * @var array<string>
+     */
+    private array $list;
 
     /**
-     * @param array $list an array of keys to keep
+     * @param array<string> $list An array of keys to keep
      */
-    public function __construct($list)
+    public function __construct(array $list)
     {
         $this->list = $list;
     }
@@ -43,7 +48,7 @@ class BasicListEvidenceKeyFilter extends EvidenceKeyFilter
      * @param string $key key to check in the filter
      * @return bool is this key in the filter's keys list?
      */
-    public function filterEvidenceKey($key)
+    public function filterEvidenceKey(string $key): bool
     {
         $key = strtolower($key);
 
@@ -59,9 +64,9 @@ class BasicListEvidenceKeyFilter extends EvidenceKeyFilter
     /**
      * Get the internal list of evidence keys in this filter.
      *
-     * @return array evidence keys
+     * @return array<string> evidence keys
      */
-    public function getList()
+    public function getList(): array
     {
         return $this->list;
     }

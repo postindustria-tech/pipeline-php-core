@@ -28,14 +28,14 @@ use fiftyone\pipeline\core\FlowElement;
 
 class ErrorFlowData extends FlowElement
 {
-    public $dataKey = 'error';
+    public string $dataKey = 'error';
 
-    public function processInternal($flowData)
+    public function processInternal($flowData): void
     {
         throw new \Exception('Something went wrong');
     }
 
-    public function getEvidenceKeyFilter()
+    public function getEvidenceKeyFilter(): BasicListEvidenceKeyFilter
     {
         return new BasicListEvidenceKeyFilter(['header.user-agent']);
     }

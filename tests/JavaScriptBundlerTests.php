@@ -31,9 +31,9 @@ use PHPUnit\Framework\TestCase;
 
 class TestEngine extends FlowElement
 {
-    public $dataKey = 'test';
+    public string $dataKey = 'test';
 
-    public $properties = [
+    public array $properties = [
         'javascript' => [
             'type' => 'javascript'
         ],
@@ -48,7 +48,7 @@ class TestEngine extends FlowElement
         ]
     ];
 
-    public function processInternal($flowData)
+    public function processInternal($flowData): void
     {
         $contents = [];
 
@@ -84,9 +84,9 @@ class TestPipeline
 
 class DelayedExecutionEngine1 extends FlowElement
 {
-    public $dataKey = 'delayedexecutiontest1';
+    public string $dataKey = 'delayedexecutiontest1';
 
-    public $properties = [
+    public array $properties = [
         'one' => [
             'delayexecution' => false,
             'type' => 'javascript'
@@ -96,7 +96,7 @@ class DelayedExecutionEngine1 extends FlowElement
         ]
     ];
 
-    public function processInternal($flowData)
+    public function processInternal($flowData): void
     {
         $contents = [
             'one' => 1,
@@ -111,9 +111,9 @@ class DelayedExecutionEngine1 extends FlowElement
 
 class DelayedExecutionEngine2 extends FlowElement
 {
-    public $dataKey = 'delayedexecutiontest2';
+    public string $dataKey = 'delayedexecutiontest2';
 
-    public $properties = [
+    public array $properties = [
         'one' => [
             'delayexecution' => true,
             'type' => 'javascript'
@@ -123,7 +123,7 @@ class DelayedExecutionEngine2 extends FlowElement
         ]
     ];
 
-    public function processInternal($flowData)
+    public function processInternal($flowData): void
     {
         $contents = [
             'one' => 1,
@@ -138,9 +138,9 @@ class DelayedExecutionEngine2 extends FlowElement
 
 class DelayedExecutionEngine3 extends FlowElement
 {
-    public $dataKey = 'delayedexecutiontest3';
+    public string $dataKey = 'delayedexecutiontest3';
 
-    public $properties = [
+    public array $properties = [
         'one' => [
             'evidenceproperties' => ['two', 'three']
         ],
@@ -152,7 +152,7 @@ class DelayedExecutionEngine3 extends FlowElement
         ]
     ];
 
-    public function processInternal($flowData)
+    public function processInternal($flowData): void
     {
         $contents = [
             'one' => 1,
@@ -222,7 +222,7 @@ class JavaScriptBundlerTests extends TestCase
 
         $flowData->process();
         
-        $this->assertSame(11, $flowData->evidence->get('query.sequence'));
+        $this->assertEquals(11, $flowData->evidence->get('query.sequence'));
         $this->assertCount(0, $flowData->jsonbundler->json['javascriptProperties']);
     }
 

@@ -21,17 +21,25 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
  * An AspectPropertyValue is a wrapper for a value
  * It lets you check this wrapper has a value inside it
  * If not value is set, a specific no value message is returned.
+ *
+ * @property mixed $value
  */
 class AspectPropertyValue
 {
-    public $noValueMessage;
-    public $hasValue = false;
+    public ?string $noValueMessage = null;
+    public bool $hasValue = false;
+
+    /**
+     * @var mixed
+     */
     private $_value;
 
     /**
@@ -40,7 +48,7 @@ class AspectPropertyValue
      * @param null|string $noValueMessage Reason why the value is missing
      * @param mixed $value
      */
-    public function __construct($noValueMessage = null, $value = 'noValue')
+    public function __construct(?string $noValueMessage = null, $value = 'noValue')
     {
         if ($value !== 'noValue') {
             $this->value = $value;
@@ -48,7 +56,7 @@ class AspectPropertyValue
             $this->hasValue = true;
         }
 
-        if ($noValueMessage) {
+        if (!empty($noValueMessage)) {
             $this->hasValue = false;
             $this->noValueMessage = $noValueMessage;
         }
@@ -57,11 +65,10 @@ class AspectPropertyValue
     /**
      * Magic getter to access the value or throw an error with the no value message.
      *
-     * @param string $key
      * @return mixed
      * @throws \Exception
      */
-    public function __get($key)
+    public function __get(string $key)
     {
         if ($key === 'value') {
             if ($this->hasValue) {
@@ -71,9 +78,15 @@ class AspectPropertyValue
                 throw new \Exception($this->noValueMessage);
             }
         }
+
+        return null;
     }
 
-    public function __set($key, $value)
+    /**
+     * @param mixed $value
+     * @return void
+     */
+    public function __set(string $key, $value)
     {
         if ($key === 'value') {
             $this->_value = $value;

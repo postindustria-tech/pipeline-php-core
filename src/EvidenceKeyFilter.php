@@ -21,6 +21,8 @@
  * such notice(s) shall fulfill the requirements of that article.
  * ********************************************************************* */
 
+declare(strict_types=1);
+
 namespace fiftyone\pipeline\core;
 
 /**
@@ -29,6 +31,8 @@ namespace fiftyone\pipeline\core;
  * This can be used to determine whether a request can be cached
  * Or to filter out evidence not needed by any element in a Pipeline
  * This base class is always extended for a specific filter type.
+ *
+ * @property callable $filterEvidenceKey
  */
 class EvidenceKeyFilter
 {
@@ -37,7 +41,10 @@ class EvidenceKeyFilter
      */
     private $_filterEvidenceKey;
 
-    public function __set($name, $value)
+    /**
+     * @param mixed $value
+     */
+    public function __set(string $name, $value): void
     {
         if ($name === 'filterEvidenceKey') {
             $this->_filterEvidenceKey = $value;
@@ -47,10 +54,10 @@ class EvidenceKeyFilter
     /**
      * Filter Evidence from an object.
      *
-     * @param array $evidenceKeyObject Evidence dictionary contents
-     * @return array Filtered evidence dictionary contents
+     * @param array<string, int|string> $evidenceKeyObject Evidence dictionary contents
+     * @return array<string, int|string> Filtered evidence dictionary contents
      */
-    public function filterEvidence($evidenceKeyObject)
+    public function filterEvidence(array $evidenceKeyObject): array
     {
         $filtered = [];
 
@@ -69,7 +76,7 @@ class EvidenceKeyFilter
      * @param string $key Property name
      * @return bool Should this be filtered out or not?
      */
-    public function filterEvidenceKey($key)
+    public function filterEvidenceKey(string $key): bool
     {
         if ($this->_filterEvidenceKey) {
             return call_user_func($this->_filterEvidenceKey, $key);
