@@ -1,6 +1,9 @@
 {
     "name": "51degrees/fiftyone.pipeline.core",
-    "description": "51Degrees Pipeline API - Real-time data micro-services aggregator.",
+    "description": "Core library for the 51Degrees Pipeline API.",
+    "keywords": [ 
+        "51degrees" 
+    ],
     "authors" : [
         {
             "name": "51Degrees Engineering",
