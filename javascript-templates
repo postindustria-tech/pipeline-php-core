@@ -75,27 +75,49 @@ fiftyoneDegreesManager = function() {
         }
     }
 
-    // Get cookies with the '51D_' prefix that have been added to the request
+    // Get 'cookies' with the '51D_' prefix that have been added to the request
     // and return the data as key value pairs. This method is needed to extract
     // cookie values for inclusion in the GET or POST request for situations
     // where CORS will prevent cookies being sent to third parties.
-    var getFodCookies = function(){
-        var keyValuePairs = document.cookie.split(/; */);
-        var fodCookies = [];
-        for(var i = 0; i < keyValuePairs.length; i++) {
-            var name = keyValuePairs[i].substring(0, keyValuePairs[i].indexOf('='));
-            if(startsWith(name, "51D_")){
-                var value = keyValuePairs[i].substring(keyValuePairs[i].indexOf('=')+1);
-                fodCookies[name] = value;
+    var getFodSavedValues = function(){
+        let fodCookies = {};
+        {
+            // Collect values from local storage
+            for(let i = 0, n = window.localStorage.length; i < n; ++i) {
+                let nextKey = window.localStorage.key(i);
+                if(startsWith(nextKey, "51D_")){
+                    let value = window.localStorage[nextKey];
+                    fodCookies[nextKey] = value;
+                }
             }
-        }
+        };
+        {
+            // Migrate values from cookies
+            let keyValuePairs = document.cookie.split(/; */);
+            let keysToRemove = [];
+            for(let nextPair of keyValuePairs) {
+                let firstEqualsLocation = nextPair.indexOf('=');
+                let name = nextPair.substring(0, firstEqualsLocation);
+                if(startsWith(name, "51D_")){
+                    if (fodCookies.hasOwnProperty(name)) {
+                        // prioritize localStorage over cookies
+                        continue;
+                    }
+                    let value = nextPair.substring(firstEqualsLocation+1);
+                    fodCookies[name] = value;
+                    window.localStorage[name] = value;
+                    keysToRemove.push(name);
+                }
+            }
+            keysToRemove.forEach(deleteCookie);
+        };
         return fodCookies;
     };
 
     // Extract key value pairs from the '51D_' prefixed cookies and concatenates
     // them to form a query string for the subsequent json refresh.
-    var getParametersFromCookies = function(){
-        var fodCookies = getFodCookies();
+    var getParametersFromStorage = function(){
+        var fodCookies = getFodSavedValues();
         var keyValuePairs = [];
         for (var key in fodCookies) {
             if (fodCookies.hasOwnProperty(key)) {
@@ -110,7 +132,10 @@ fiftyoneDegreesManager = function() {
         return keyValuePairs;
     };
 
-    // Delete a cookie.
+    /**
+     * Delete a cookie.
+     * @param {string} name Cookie key
+     */
     function deleteCookie(name) {
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
@@ -206,6 +231,9 @@ fiftyoneDegreesManager = function() {
                             completed = false;
                             jsPropertiesStarted.push(name);
                             started++;
+
+                            let r = new RegExp('document\\.cookie\\s*=\\s*(("([A-Za-z0-9_]+)\\s*=\\s*"\\s*\\+\\s*([^\\s};]+))|(`([A-Za-z0-9_]+)\\s*=\\s*\\$\\{([^}]+)\\}`))', 'g');
+                            body = body.replaceAll(r, 'window.localStorage["$3$6"]=$4$7');
 
                             if (body.indexOf(searchString) !== -1){
                                 callbackCounter++;
@@ -335,14 +363,6 @@ fiftyoneDegreesManager = function() {
             // for 'complete' functions to fire.
             fireChangeFuncs(json);
             resolve(json);
-{{^_enableCookies}}
-            var fodCookies = getFodCookies();
-            for (var key in fodCookies) {
-                if (fodCookies.hasOwnProperty(key)) {
-                    deleteCookie(key);
-                }
-            }
-{{/_enableCookies}}
         }
     }
 
@@ -364,7 +384,7 @@ fiftyoneDegreesManager = function() {
 
         // Get additional parameters from cookies in case they are not sent
         // by the browser.
-		var cookieParams = getParametersFromCookies();
+		var cookieParams = getParametersFromStorage();
         for(var cookie in cookieParams) {
             var parts = cookieParams[cookie].split('=');
             parameters[parts[0]] = parts[1];
@@ -419,6 +439,7 @@ fiftyoneDegreesManager = function() {
 
         // Add the HTTP header for POST form data.
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.setRequestHeader('Accept', 'application/json');
 
         xhr.onload = function () {
 
